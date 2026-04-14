@@ -1,0 +1,3477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RN SafeAPI Production Reference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav button {
+            padding: 10px 20px;
+            border: none;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #667eea;
+        }
+
+        nav button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        nav button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #555;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            border-left: 4px solid #667eea;
+        }
+
+        .code-block code {
+            color: #d4d4d4;
+        }
+
+        .good {
+            color: #4ec9b0;
+        }
+
+        .bad {
+            color: #f48771;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .checklist {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .checklist li {
+            padding: 10px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+
+        .checklist li:before {
+            content: "☑ ";
+            color: #34c759;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #1565c0;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #e65100;
+        }
+
+        .alert-success {
+            background: #f1f8e9;
+            border-color: #4caf50;
+            color: #33691e;
+        }
+
+        .alert-danger {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .wrong {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+
+        .correct {
+            background: #f1f8e9;
+            border-left: 4px solid #4caf50;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin: 5px 5px 5px 0;
+            font-weight: 600;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn {
+            background: #34c759;
+            font-size: 0.8em;
+            padding: 6px 12px;
+        }
+
+        .copy-btn:hover {
+            background: #30b050;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #856404;
+        }
+
+        .success-badge {
+            display: inline-block;
+            background: #34c759;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .error-badge {
+            display: inline-block;
+            background: #ff3b30;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .code-label {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .line-numbers {
+            counter-reset: line-number;
+        }
+
+        .line {
+            counter-increment: line-number;
+        }
+
+        .line::before {
+            content: counter(line-number);
+            display: inline-block;
+            width: 30px;
+            text-align: right;
+            margin-right: 15px;
+            color: #6a9955;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 RN SafeAPI Production Reference</h1>
+            <p>React Native API Integration — Safety Guards · Error Handling · Crash Protection · Code Review</p>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" onclick="showSection('overview')">📋 Overview</button>
+            <button class="nav-btn" onclick="showSection('es6')">💎 ES6 Patterns</button>
+            <button class="nav-btn" onclick="showSection('safety')">🛡️ Safety Guards</button>
+            <button class="nav-btn" onclick="showSection('ui')">🎨 UI States</button>
+            <button class="nav-btn" onclick="showSection('validation')">✅ Validation</button>
+            <button class="nav-btn" onclick="showSection('buttons')">🔘 Button States</button>
+            <button class="nav-btn" onclick="showSection('normalization')">🔄 Error Normalization</button>
+            <button class="nav-btn" onclick="showSection('crashguards')">💥 Crash Guards</button>
+            <button class="nav-btn" onclick="showSection('httpcodes')">📡 HTTP Status Codes</button>
+            <button class="nav-btn" onclick="showSection('retry')">🔁 Retry & Race</button>
+            <button class="nav-btn" onclick="showSection('servererrors')">🖥️ Server Errors</button>
+            <button class="nav-btn" onclick="showSection('statemanagement')">🗂️ State Management</button>
+            <button class="nav-btn" onclick="showSection('authflow')">🔐 Auth Flow</button>
+            <button class="nav-btn" onclick="showSection('storage')">💾 Storage</button>
+            <button class="nav-btn" onclick="showSection('offline')">📶 Offline</button>
+            <button class="nav-btn" onclick="showSection('codereview')">🔍 Code Review</button>
+            <button class="nav-btn" onclick="showSection('prompts')">💬 AI Prompts</button>
+            <button class="nav-btn" onclick="showSection('checklist')">📝 Checklists</button>
+        </nav>
+
+        <div class="content">
+
+            <!-- SECTION: OVERVIEW -->
+            <section id="overview" class="section active">
+                <h2><span class="emoji">📋</span>Quick Overview</h2>
+                
+                <div class="alert alert-info">
+                    <strong>ये document क्या करता है?</strong><br>
+                    यह आपको React Native + API Integration के लिए production-grade code लिखने के लिए सब कुछ सिखाता है। ES6 patterns से लेकर error handling, UI state management, form validation - सब कुछ cover करता है।
+                </div>
+
+                <h3>🎯 यह Document किस लिए है?</h3>
+                <p>इस document को सीधे AI को दे सकते हो अपने code के साथ और AI आपका code review करेगा:</p>
+                
+                <div class="code-block">
+<span class="comment">// आपका code यहाँ paste करो + यह document send करो</span>
+
+<span class="string">"Please review my React Native code using this guide:
+[पूरा document content]
+
+Here's my code to review:
+[आपका code]
+
+बताओ:
+1. क्या सब safety guards हैं?
+2. क्या missing है?
+3. क्या improvements कर सकते हैं?
+4. Implementation कैसे होगी?"</span>
+                </div>
+
+                <h3>📚 Document Structure</h3>
+                <ul class="checklist">
+                    <li><strong>ES6 Patterns</strong> - Default values, ?? vs ||, destructuring</li>
+                    <li><strong>Safety Guards</strong> - Null checks, error handling, cleanup</li>
+                    <li><strong>UI States</strong> - Loading, error, empty, success states</li>
+                    <li><strong>Form Validation</strong> - Real-time validation, visual feedback</li>
+                    <li><strong>Button States</strong> - 4 states, double-submit prevention</li>
+                    <li><strong>Error Normalization</strong> - API → State → UI teen layers pe normalize</li>
+                    <li><strong>Crash Guards</strong> - ErrorBoundary, FlatList, Navigation, Type-safe render</li>
+                    <li><strong>HTTP Status Codes</strong> - 400/401/403/404/422/429/500 — har code alag handle</li>
+                    <li><strong>Retry & Race Conditions</strong> - Exponential backoff, debounce, request deduplication</li>
+                    <li><strong>Server Errors (422)</strong> - Field-level errors, shape validation, multi-format parsing</li>
+                    <li><strong>State Management</strong> - useState vs Context vs Zustand — kab kya use karein</li>
+                    <li><strong>Auth Flow</strong> - App open check, Login, Logout complete cleanup, Protected routes</li>
+                    <li><strong>Storage</strong> - SecureStore (tokens) vs AsyncStorage (prefs), centralized service</li>
+                    <li><strong>Offline</strong> - NetInfo, offline banner, cache + stale-while-revalidate</li>
+                    <li><strong>Code Review</strong> - AI workflow, prompts, step-by-step guide</li>
+                    <li><strong>Checklists</strong> - Complete pre-deployment checklist</li>
+                    <li><strong>Button States</strong> - 4 states management (idle, disabled, loading, success)</li>
+                    <li><strong>Code Review</strong> - How to use with AI</li>
+                    <li><strong>AI Prompts</strong> - Ready-to-use prompts</li>
+                    <li><strong>Checklists</strong> - Before-after code deployment</li>
+                </ul>
+
+                <h3>🚀 कैसे करना है Code Review?</h3>
+                <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h4>Step 1: अपना Code तैयार करो</h4>
+                    <p>जो code लिखा है, अपने form/API component को copy करो</p>
+
+                    <h4>Step 2: यह Document + Code भेजो AI को</h4>
+                    <p>AI_Prompts section से ready prompt use करो</p>
+
+                    <h4>Step 3: AI के साथ Discuss करो</h4>
+                    <p>AI बताएगा क्या सही है, क्या गलत है, क्या add करना चाहिए</p>
+
+                    <h4>Step 4: Implementation करो</h4>
+                    <p>AI के suggestions follow करके code improve करो</p>
+                </div>
+            </section>
+
+            <!-- SECTION: ES6 PATTERNS -->
+            <section id="es6" class="section">
+                <h2><span class="emoji">💎</span>ES6 Patterns & Default Values</h2>
+
+                <h3>1️⃣ Nullish Coalescing (??) vs OR (||)</h3>
+
+                <p><strong>यह MOST IMPORTANT concept है!</strong></p>
+
+                <div class="comparison">
+                    <div class="comparison-item wrong">
+                        <h4>❌ WRONG (using ||)</h4>
+                        <div class="code-block"><span class="keyword">const</span> price = data?.price || <span class="string">100</span>;
+<span class="comment">// अगर price = 0 है तो 100 बन जाएगा! ❌</span>
+
+<span class="keyword">const</span> quantity = form?.qty || <span class="string">1</span>;
+<span class="comment">// अगर qty = 0 है तो 1 बन जाएगा! ❌</span>
+
+<span class="keyword">const</span> isDark = settings?.dark || <span class="keyword">false</span>;
+<span class="comment">// अगर dark = false है तो false ही रहेगा (coincidence!) ❌</span></div>
+                    </div>
+
+                    <div class="comparison-item correct">
+                        <h4>✅ CORRECT (using ??)</h4>
+                        <div class="code-block"><span class="keyword">const</span> price = data?.price ?? <span class="string">100</span>;
+<span class="comment">// अगर price = 0 है तो 0 ही रहेगा! ✓</span>
+
+<span class="keyword">const</span> quantity = form?.qty ?? <span class="string">1</span>;
+<span class="comment">// अगर qty = 0 है तो 0 ही रहेगा! ✓</span>
+
+<span class="keyword">const</span> isDark = settings?.dark ?? <span class="keyword">false</span>;
+<span class="comment">// अगर dark = false है तो false ही रहेगा! ✓</span></div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>Rule of Thumb:</strong><br>
+                    <span class="highlight">?? (nullish) use करो जब 0, "", false valid values हों</span><br>
+                    <span class="highlight">|| (logical OR) use करो सिर्फ rare cases में</span>
+                </div>
+
+                <h3>2️⃣ Destructuring with Defaults</h3>
+
+                <div class="code-block"><span class="keyword">const</span> getUserData = (apiResponse = {}) => {
+  <span class="keyword">const</span> {
+    id = <span class="keyword">null</span>,
+    name = <span class="string">'Guest User'</span>,
+    email = <span class="string">'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="640a0b490109050d0824011c05091408014a070b09">[email&#160;protected]</a>'</span>,
+    profile = {},
+    settings = {},
+    permissions = [],
+  } = apiResponse;
+
+  <span class="keyword">return</span> { id, name, email, profile, settings, permissions };
+};
+
+<span class="comment">// Safe even if apiResponse is {}</span>
+<span class="keyword">const</span> user = getUserData(apiData);
+                </div>
+
+                <h3>3️⃣ Spread Operator with Defaults</h3>
+
+                <div class="code-block"><span class="keyword">const</span> defaultState = {
+  data: <span class="keyword">null</span>,
+  loading: <span class="keyword">false</span>,
+  error: <span class="keyword">null</span>,
+  metadata: {
+    totalCount: <span class="string">0</span>,
+    pageSize: <span class="string">20</span>,
+  },
+};
+
+<span class="keyword">const</span> updateState = (apiResponse = {}) => {
+  <span class="keyword">return</span> {
+    ...defaultState,
+    data: apiResponse.data ?? defaultState.data,
+    metadata: {
+      ...defaultState.metadata,
+      totalCount: apiResponse.total ?? <span class="string">0</span>,
+    },
+  };
+};
+                </div>
+
+                <h3>4️⃣ Safe Array Operations</h3>
+
+                <div class="code-block"><span class="comment">// SAFE - Check if array first</span>
+<span class="keyword">const</span> renderItems = (items = []) => {
+  <span class="keyword">const</span> safeItems = Array.isArray(items)
+    ? items.filter(item => item && <span class="keyword">typeof</span> item === <span class="string">'object'</span>)
+    : [];
+
+  <span class="keyword">return</span> safeItems.map(item => ({
+    id: item?.id ?? Math.random(),
+    name: item?.name?.trim() ?? <span class="string">'Unnamed'</span>,
+    price: <span class="keyword">typeof</span> item?.price === <span class="string">'number'</span> ? item.price : <span class="string">0</span>,
+  }));
+};
+                </div>
+            </section>
+
+            <!-- SECTION: SAFETY GUARDS -->
+            <section id="safety" class="section">
+                <h2><span class="emoji">🛡️</span>Safety Guards & Error Handling</h2>
+
+                <h3>Complete Safety Checklist</h3>
+                <ul class="checklist">
+                    <li>Null/undefined checks on ALL data access</li>
+                    <li>Try-catch blocks for ALL async operations</li>
+                    <li>Input validation BEFORE API calls</li>
+                    <li>Response status checking (response.ok)</li>
+                    <li>Response data validation</li>
+                    <li>Timeout implementation (AbortController)</li>
+                    <li>Component cleanup on unmount</li>
+                    <li>Separate error handling for different types</li>
+                </ul>
+
+                <h3>1️⃣ AbortController + Timeout Pattern</h3>
+
+                <div class="code-block"><span class="keyword">const</span> fetchData = async () => {
+  <span class="keyword">const</span> controller = <span class="keyword">new</span> AbortController();
+  <span class="keyword">const</span> timeoutId = setTimeout(
+    () => controller.abort(),
+    <span class="string">10000</span> <span class="comment">// 10 seconds</span>
+  );
+
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> response = <span class="keyword">await</span> fetch(url, {
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    <span class="comment">// Check status</span>
+    <span class="keyword">if</span> (!response.ok) {
+      <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">`HTTP <span class="string">\${response.status}</span>`</span>);
+    }
+
+    <span class="keyword">const</span> data = <span class="keyword">await</span> response.json();
+    <span class="keyword">return</span> data;
+
+  } <span class="keyword">catch</span> (err) {
+    <span class="keyword">if</span> (err.name === <span class="string">'AbortError'</span>) {
+      console.error(<span class="string">'Request timeout'</span>);
+    } <span class="keyword">else</span> {
+      console.error(<span class="string">'API error'</span>, err);
+    }
+  }
+};
+                </div>
+
+                <h3>2️⃣ Component Cleanup (Memory Leak Prevention)</h3>
+
+                <div class="code-block"><span class="keyword">const</span> MyComponent = () => {
+  useEffect(() => {
+    <span class="keyword">let</span> isMounted = <span class="keyword">true</span>;
+    <span class="keyword">let</span> controller = <span class="keyword">null</span>;
+
+    <span class="keyword">const</span> fetchData = async () => {
+      controller = <span class="keyword">new</span> AbortController();
+
+      <span class="keyword">try</span> {
+        <span class="keyword">const</span> response = <span class="keyword">await</span> fetch(url, {
+          signal: controller.signal,
+        });
+        <span class="keyword">const</span> data = <span class="keyword">await</span> response.json();
+
+        <span class="comment">// Only update if still mounted!</span>
+        <span class="keyword">if</span> (isMounted) {
+          setData(data);
+        }
+      } <span class="keyword">catch</span> (err) {
+        <span class="keyword">if</span> (isMounted && err.name !== <span class="string">'AbortError'</span>) {
+          setError(err.message);
+        }
+      }
+    };
+
+    fetchData();
+
+    <span class="comment">// Cleanup on unmount</span>
+    <span class="keyword">return</span> () => {
+      isMounted = <span class="keyword">false</span>;
+      controller?.abort();
+    };
+  }, []);
+
+  <span class="keyword">return</span> <span class="string">/* ... */</span>;
+};
+                </div>
+
+                <h3>3️⃣ Error Type Handling</h3>
+
+                <div class="code-block"><span class="keyword">try</span> {
+  <span class="comment">// API call</span>
+} <span class="keyword">catch</span> (err) {
+  <span class="keyword">let</span> errorMsg;
+
+  <span class="keyword">if</span> (err.name === <span class="string">'AbortError'</span>) {
+    <span class="comment">// Timeout error</span>
+    errorMsg = <span class="string">'Request took too long'</span>;
+  } <span class="keyword">else</span> <span class="keyword">if</span> (err <span class="keyword">instanceof</span> TypeError) {
+    <span class="comment">// Network error</span>
+    errorMsg = <span class="string">'Network error. Check connection'</span>;
+  } <span class="keyword">else</span> <span class="keyword">if</span> (err <span class="keyword">instanceof</span> SyntaxError) {
+    <span class="comment">// JSON parse error</span>
+    errorMsg = <span class="string">'Invalid response format'</span>;
+  } <span class="keyword">else</span> {
+    <span class="comment">// Generic error</span>
+    errorMsg = err.message || <span class="string">'Unknown error'</span>;
+  }
+
+  setError(errorMsg);
+}
+                </div>
+            </section>
+
+            <!-- SECTION: UI STATES -->
+            <section id="ui" class="section">
+                <h2><span class="emoji">🎨</span>UI State Management</h2>
+
+                <h3>State Structure (Complete)</h3>
+
+                <div class="code-block"><span class="keyword">const</span> [state, setState] = useState({
+  <span class="comment">// DATA</span>
+  data: <span class="keyword">null</span>,
+  
+  <span class="comment">// LOADING STATES</span>
+  isLoading: <span class="keyword">false</span>,
+  isLoadingMore: <span class="keyword">false</span>,
+  isRefreshing: <span class="keyword">false</span>,
+  isSubmitting: <span class="keyword">false</span>,
+  
+  <span class="comment">// ERROR STATES</span>
+  error: <span class="keyword">null</span>,
+  hasError: <span class="keyword">false</span>,
+  
+  <span class="comment">// UI STATES</span>
+  isEmpty: <span class="keyword">false</span>,
+  isSuccess: <span class="keyword">false</span>,
+  
+  <span class="comment">// METADATA</span>
+  lastUpdated: <span class="keyword">null</span>,
+  retryCount: <span class="string">0</span>,
+});
+                </div>
+
+                <h3>Rendering Logic</h3>
+
+                <div class="code-block"><span class="comment">// Render in this order:</span>
+
+<span class="keyword">if</span> (state.isLoading) {
+  <span class="keyword">return</span> &lt;SkeletonLoader /&gt;;
+}
+
+<span class="keyword">if</span> (state.hasError) {
+  <span class="keyword">return</span> &lt;ErrorFallback error={state.error} /&gt;;
+}
+
+<span class="keyword">if</span> (state.isEmpty) {
+  <span class="keyword">return</span> &lt;EmptyState /&gt;;
+}
+
+<span class="keyword">if</span> (!state.data) {
+  <span class="keyword">return</span> &lt;Loading /&gt;;
+}
+
+<span class="keyword">return</span> &lt;DataDisplay data={state.data} /&gt;;
+                </div>
+
+                <h3>5 Types of Fallback UI</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>📦 Loading State</h4>
+                        <p><strong>Show:</strong> Skeleton loader with shimmer animation</p>
+                        <p><strong>Why:</strong> Users see something is happening</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>⚠️ Error State</h4>
+                        <p><strong>Show:</strong> Error icon + message + retry button</p>
+                        <p><strong>Why:</strong> Users know what went wrong</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>📭 Empty State</h4>
+                        <p><strong>Show:</strong> Empty icon + helpful message</p>
+                        <p><strong>Why:</strong> Users understand data is empty</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>⏱️ Timeout State</h4>
+                        <p><strong>Show:</strong> Timeout icon + specific message</p>
+                        <p><strong>Why:</strong> Users know it's a timeout issue</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>📡 No Internet</h4>
+                        <p><strong>Show:</strong> Network icon + connection message</p>
+                        <p><strong>Why:</strong> Users know it's network issue</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>✅ Success State</h4>
+                        <p><strong>Show:</strong> Green checkmark + toast</p>
+                        <p><strong>Why:</strong> Users get positive feedback</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: VALIDATION -->
+            <section id="validation" class="section">
+                <h2><span class="emoji">✅</span>Form Validation & Feedback</h2>
+
+                <h3>Real-Time Validation Flow</h3>
+
+                <div class="code-block"><span class="keyword">const</span> validateEmail = (email = <span class="string">''</span>) => {
+  <span class="keyword">const</span> trimmed = email.trim();
+  
+  <span class="keyword">if</span> (!trimmed) {
+    <span class="keyword">return</span> {
+      isValid: <span class="keyword">false</span>,
+      error: <span class="string">'Email is required'</span>,
+    };
+  }
+  
+  <span class="keyword">const</span> regex = /<span class="string">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span>/;
+  <span class="keyword">if</span> (!regex.test(trimmed)) {
+    <span class="keyword">return</span> {
+      isValid: <span class="keyword">false</span>,
+      error: <span class="string">'Invalid email format'</span>,
+    };
+  }
+  
+  <span class="keyword">return</span> { isValid: <span class="keyword">true</span>, error: <span class="keyword">null</span> };
+};
+
+<span class="comment">// On every keystroke:</span>
+<span class="keyword">const</span> handleChange = (text) => {
+  setEmail(text);
+  
+  <span class="keyword">if</span> (text.trim().length > <span class="string">0</span>) {
+    <span class="keyword">const</span> result = validateEmail(text);
+    setValidation(result);
+  }
+};
+                </div>
+
+                <h3>Visual Feedback for Input</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>State</th>
+                            <th>Border Color</th>
+                            <th>Icon</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Default</strong></td>
+                            <td>#E5E5EA (Gray)</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Valid</strong></td>
+                            <td>#34C759 (Green)</td>
+                            <td>✓</td>
+                            <td>Green success message</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Error</strong></td>
+                            <td>#FF3B30 (Red)</td>
+                            <td>!</td>
+                            <td>Red error message</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Focused</strong></td>
+                            <td>#007AFF (Blue)</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Password Validation Example</h3>
+
+                <div class="code-block"><span class="keyword">const</span> validatePassword = (password = <span class="string">''</span>) => {
+  <span class="keyword">if</span> (!password) {
+    <span class="keyword">return</span> { isValid: <span class="keyword">false</span>, error: <span class="string">'Required'</span> };
+  }
+  
+  <span class="keyword">const</span> rules = {
+    length: password.length >= <span class="string">8</span>,
+    uppercase: /<span class="string">/[A-Z]/</span>/.test(password),
+    number: /<span class="string">/[0-9]/</span>/.test(password),
+    special: /<span class="string">/[!@#$%^&*]/</span>/.test(password),
+  };
+  
+  <span class="keyword">const</span> allValid = Object.values(rules).every(r => r);
+  
+  <span class="keyword">return</span> {
+    isValid: allValid,
+    error: allValid ? <span class="keyword">null</span> : <span class="string">'Missing requirements'</span>,
+    rules, <span class="comment">// Show progress</span>
+  };
+};
+                </div>
+            </section>
+
+            <!-- SECTION: BUTTON STATES -->
+            <section id="buttons" class="section">
+                <h2><span class="emoji">🔘</span>Button State Management</h2>
+
+                <h3>4 Button States</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>State</th>
+                            <th>Color</th>
+                            <th>Text</th>
+                            <th>Enabled</th>
+                            <th>Show</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: #f0f4ff;">
+                            <td><strong>IDLE</strong></td>
+                            <td>#007AFF (Blue)</td>
+                            <td>Submit</td>
+                            <td>✓ Yes</td>
+                            <td>Normal button</td>
+                        </tr>
+                        <tr style="background: #fff3f5;">
+                            <td><strong>DISABLED</strong></td>
+                            <td>#E5E5EA (Gray)</td>
+                            <td>Complete all fields</td>
+                            <td>✗ No</td>
+                            <td>Grayed out</td>
+                        </tr>
+                        <tr style="background: #f5f5f5;">
+                            <td><strong>LOADING</strong></td>
+                            <td>#CCCCCC (Light Gray)</td>
+                            <td>Submitting...</td>
+                            <td>✗ No</td>
+                            <td>Spinner + text</td>
+                        </tr>
+                        <tr style="background: #f0fff5;">
+                            <td><strong>SUCCESS</strong></td>
+                            <td>#34C759 (Green)</td>
+                            <td>✓ Success!</td>
+                            <td>✗ No</td>
+                            <td>Green with check</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Button State Logic</h3>
+
+                <div class="code-block"><span class="keyword">const</span> getButtonState = (isFormValid, isSubmitting, isSuccess) => {
+  <span class="keyword">if</span> (!isFormValid) <span class="keyword">return</span> <span class="string">'disabled'</span>;
+  <span class="keyword">if</span> (isSubmitting) <span class="keyword">return</span> <span class="string">'loading'</span>;
+  <span class="keyword">if</span> (isSuccess) <span class="keyword">return</span> <span class="string">'success'</span>;
+  <span class="keyword">return</span> <span class="string">'idle'</span>;
+};
+
+<span class="keyword">const</span> buttonState = getButtonState(
+  formData.email && formData.password,
+  submitting,
+  submitSuccess
+);
+
+<span class="comment">// Use state to render button with correct color/label</span>
+                </div>
+
+                <h3>Preventing Double Submission</h3>
+
+                <div class="alert alert-info">
+                    <strong>Important:</strong> Button को disabled करो जब:
+                    <ul style="margin-top: 10px;">
+                        <li>Form validation fail हो</li>
+                        <li>API request in progress हो (isSubmitting = true)</li>
+                        <li>Success हो गया हो (दिखाने के लिए)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SECTION: ERROR NORMALIZATION -->
+            <section id="normalization" class="section">
+                <h2><span class="emoji">🔄</span>Error & Data Normalization Checks</h2>
+
+                <div class="alert alert-warning">
+                    <strong>Normalization क्यों जरूरी है?</strong><br>
+                    API कभी भी inconsistent data दे सकती है — null, undefined, wrong type, missing fields। बिना normalization के UI crash हो जाती है। तीन layers पर normalize करो: <strong>API Layer → State Layer → UI/Render Layer</strong>
+                </div>
+
+                <h3>🗂️ तीन Layers का Architecture</h3>
+                <div class="code-block"><span class="comment">// LAYER 1: API Response आया     → Normalize करो
+// LAYER 2: State में set करो   → Validate करो
+// LAYER 3: UI में render करो   → Safe guards लगाओ</span>
+
+<span class="comment">// Flow diagram:</span>
+<span class="keyword">API Response</span>
+    ↓ normalizeApiResponse()
+<span class="keyword">Clean Data Object</span>
+    ↓ setStateWithDefaults()
+<span class="keyword">Safe State</span>
+    ↓ safeRender()
+<span class="keyword">Crash-Free UI ✅</span>
+                </div>
+
+                <h3>1️⃣ Layer 1: API Response Normalization</h3>
+                <p>API response को सीधे state में मत डालो — पहले normalize करो।</p>
+
+                <div class="comparison">
+                    <div class="comparison-item wrong">
+                        <h4>❌ WRONG — Raw API data directly use करना</h4>
+                        <div class="code-block"><span class="keyword">const</span> data = <span class="keyword">await</span> response.json();
+<span class="comment">// Direct use — DANGEROUS! ❌</span>
+setUser(data.user);
+setProducts(data.products);
+<span class="comment">// अगर data.user null है?
+// अगर data.products string है?
+// अगर field name बदल गई API में?
+// → CRASH!</span></div>
+                    </div>
+                    <div class="comparison-item correct">
+                        <h4>✅ CORRECT — Normalize करके use करना</h4>
+                        <div class="code-block"><span class="keyword">const</span> raw = <span class="keyword">await</span> response.json();
+<span class="comment">// Normalize first ✅</span>
+<span class="keyword">const</span> clean = normalizeApiResponse(raw);
+setUser(clean.user);
+setProducts(clean.products);
+<span class="comment">// सब defaults set हैं
+// Types verified हैं
+// Missing fields handled हैं ✓</span></div>
+                    </div>
+                </div>
+
+                <h3>Complete normalizeApiResponse() Function</h3>
+                <div class="code-block"><span class="keyword">const</span> normalizeApiResponse = (raw = {}) => {
+  <span class="comment">// Step 1: Check if raw itself is valid</span>
+  <span class="keyword">if</span> (!raw || <span class="keyword">typeof</span> raw !== <span class="string">'object'</span> || Array.isArray(raw)) {
+    console.warn(<span class="string">'[Normalize] Invalid API response shape'</span>, raw);
+    <span class="keyword">return</span> getDefaultResponseShape();
+  }
+
+  <span class="comment">// Step 2: Normalize each field with type checks</span>
+  <span class="keyword">return</span> {
+    <span class="comment">// String fields</span>
+    id:     normalizeString(raw.id ?? raw._id ?? raw.userId),
+    name:   normalizeString(raw.name ?? raw.fullName ?? raw.display_name),
+    email:  normalizeString(raw.email ?? raw.emailAddress),
+
+    <span class="comment">// Number fields (API कभी string दे देती है "123")</span>
+    age:    normalizeNumber(raw.age),
+    price:  normalizeNumber(raw.price ?? raw.amount),
+    count:  normalizeNumber(raw.count ?? raw.total),
+
+    <span class="comment">// Boolean fields (API "true"/"false" string दे सकती है)</span>
+    isActive:  normalizeBoolean(raw.isActive ?? raw.active ?? raw.enabled),
+    isVerified: normalizeBoolean(raw.isVerified ?? raw.verified),
+
+    <span class="comment">// Array fields</span>
+    items:  normalizeArray(raw.items ?? raw.products ?? raw.data),
+    tags:   normalizeArray(raw.tags),
+
+    <span class="comment">// Nested object fields</span>
+    address: normalizeAddress(raw.address ?? raw.location),
+    profile: normalizeProfile(raw.profile ?? raw.userProfile),
+
+    <span class="comment">// Date fields</span>
+    createdAt: normalizeDate(raw.createdAt ?? raw.created_at),
+    updatedAt: normalizeDate(raw.updatedAt ?? raw.updated_at),
+  };
+};
+
+<span class="comment">// Default shape जब response invalid हो</span>
+<span class="keyword">const</span> getDefaultResponseShape = () => ({
+  id: <span class="keyword">null</span>,
+  name: <span class="string">''</span>,
+  email: <span class="string">''</span>,
+  age: <span class="keyword">null</span>,
+  price: <span class="string">0</span>,
+  count: <span class="string">0</span>,
+  isActive: <span class="keyword">false</span>,
+  isVerified: <span class="keyword">false</span>,
+  items: [],
+  tags: [],
+  address: <span class="keyword">null</span>,
+  profile: <span class="keyword">null</span>,
+  createdAt: <span class="keyword">null</span>,
+  updatedAt: <span class="keyword">null</span>,
+});
+                </div>
+
+                <h3>Type-Specific Normalizer Helpers</h3>
+                <div class="code-block"><span class="comment">// ─── String Normalizer ───────────────────────────────</span>
+<span class="keyword">const</span> normalizeString = (val, fallback = <span class="string">''</span>) => {
+  <span class="keyword">if</span> (val === <span class="keyword">null</span> || val === <span class="keyword">undefined</span>) <span class="keyword">return</span> fallback;
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> val === <span class="string">'string'</span>) <span class="keyword">return</span> val.trim();
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> val === <span class="string">'number'</span>) <span class="keyword">return</span> String(val);
+  <span class="keyword">return</span> fallback;
+};
+
+<span class="comment">// ─── Number Normalizer ───────────────────────────────</span>
+<span class="keyword">const</span> normalizeNumber = (val, fallback = <span class="string">0</span>) => {
+  <span class="keyword">if</span> (val === <span class="keyword">null</span> || val === <span class="keyword">undefined</span>) <span class="keyword">return</span> fallback;
+  <span class="keyword">const</span> num = Number(val); <span class="comment">// Handles "123" → 123</span>
+  <span class="keyword">return</span> isNaN(num) ? fallback : num;
+};
+
+<span class="comment">// ─── Boolean Normalizer ──────────────────────────────</span>
+<span class="keyword">const</span> normalizeBoolean = (val, fallback = <span class="keyword">false</span>) => {
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> val === <span class="string">'boolean'</span>) <span class="keyword">return</span> val;
+  <span class="keyword">if</span> (val === <span class="string">'true'</span> || val === <span class="string">1</span> || val === <span class="string">'1'</span>) <span class="keyword">return</span> <span class="keyword">true</span>;
+  <span class="keyword">if</span> (val === <span class="string">'false'</span> || val === <span class="string">0</span> || val === <span class="string">'0'</span>) <span class="keyword">return</span> <span class="keyword">false</span>;
+  <span class="keyword">return</span> fallback;
+};
+
+<span class="comment">// ─── Array Normalizer ────────────────────────────────</span>
+<span class="keyword">const</span> normalizeArray = (val, fallback = []) => {
+  <span class="keyword">if</span> (!val) <span class="keyword">return</span> fallback;
+  <span class="keyword">if</span> (Array.isArray(val)) <span class="keyword">return</span> val.filter(item => item !== <span class="keyword">null</span> && item !== <span class="keyword">undefined</span>);
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> val === <span class="string">'object'</span>) <span class="keyword">return</span> Object.values(val); <span class="comment">// {0: x, 1: y} → [x, y]</span>
+  <span class="keyword">return</span> fallback;
+};
+
+<span class="comment">// ─── Date Normalizer ─────────────────────────────────</span>
+<span class="keyword">const</span> normalizeDate = (val) => {
+  <span class="keyword">if</span> (!val) <span class="keyword">return</span> <span class="keyword">null</span>;
+  <span class="keyword">const</span> date = <span class="keyword">new</span> Date(val);
+  <span class="keyword">return</span> isNaN(date.getTime()) ? <span class="keyword">null</span> : date.toISOString();
+};
+
+<span class="comment">// ─── Nested Object Normalizer ────────────────────────</span>
+<span class="keyword">const</span> normalizeAddress = (addr) => {
+  <span class="keyword">if</span> (!addr || <span class="keyword">typeof</span> addr !== <span class="string">'object'</span>) <span class="keyword">return</span> <span class="keyword">null</span>;
+  <span class="keyword">return</span> {
+    street:  normalizeString(addr.street ?? addr.line1),
+    city:    normalizeString(addr.city),
+    state:   normalizeString(addr.state ?? addr.province),
+    country: normalizeString(addr.country, <span class="string">'IN'</span>),
+    pincode: normalizeString(addr.pincode ?? addr.zip ?? addr.postal_code),
+  };
+};
+                </div>
+
+                <h3>2️⃣ Layer 2: State Layer Normalization</h3>
+                <p>State update करते समय existing state को safe रखो।</p>
+                <div class="code-block"><span class="comment">// ❌ WRONG — state merge unsafe</span>
+<span class="keyword">const</span> updateUser = (newData) => {
+  setUser({ ...user, ...newData }); <span class="comment">// newData में null fields हो सकती हैं!</span>
+};
+
+<span class="comment">// ✅ CORRECT — state normalize करके merge करो</span>
+<span class="keyword">const</span> updateUser = (newData) => {
+  <span class="keyword">const</span> normalized = normalizeApiResponse(newData);
+  
+  setUser(prevUser => ({
+    ...(prevUser || {}),        <span class="comment">// prevUser null हो तो भी safe</span>
+    ...normalized,
+    <span class="comment">// Critical fields को override मत होने दो</span>
+    id: prevUser?.id ?? normalized.id,
+    createdAt: prevUser?.createdAt ?? normalized.createdAt,
+  }));
+};
+
+<span class="comment">// Array state के लिए safe update</span>
+<span class="keyword">const</span> updateList = (newItems) => {
+  <span class="keyword">const</span> safeItems = normalizeArray(newItems);
+  
+  setItems(prev => {
+    <span class="keyword">const</span> safePrev = Array.isArray(prev) ? prev : [];
+    <span class="keyword">return</span> [...safePrev, ...safeItems];
+  });
+};
+                </div>
+
+                <h3>3️⃣ Layer 3: UI/Render Layer Normalization</h3>
+                <p>Data render करने से पहले आखिरी check लगाओ।</p>
+                <div class="code-block"><span class="comment">// ─── Safe Text Render Helper ──────────────────────────</span>
+<span class="keyword">const</span> safeText = (val, fallback = <span class="string">'-'</span>) => {
+  <span class="keyword">if</span> (val === <span class="keyword">null</span> || val === <span class="keyword">undefined</span>) <span class="keyword">return</span> fallback;
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> val === <span class="string">'string'</span>) <span class="keyword">return</span> val.trim() || fallback;
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> val === <span class="string">'number'</span>) <span class="keyword">return</span> String(val);
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> val === <span class="string">'boolean'</span>) <span class="keyword">return</span> val ? <span class="string">'Yes'</span> : <span class="string">'No'</span>;
+  <span class="keyword">return</span> fallback;
+};
+
+<span class="comment">// ─── Safe Price/Number Display ────────────────────────</span>
+<span class="keyword">const</span> safePrice = (val, currency = <span class="string">'₹'</span>) => {
+  <span class="keyword">const</span> num = normalizeNumber(val, <span class="string">0</span>);
+  <span class="keyword">return</span> <span class="string">`<span class="string">\${currency}</span><span class="string">\${num.toFixed(2)}</span>`</span>;
+};
+
+<span class="comment">// ─── Usage in JSX ────────────────────────────────────</span>
+<span class="keyword">const</span> UserCard = ({ user = {} }) => (
+  &lt;View&gt;
+    <span class="comment">{/* ❌ CRASH: user.name could be null */}</span>
+    &lt;Text&gt;{user.name}&lt;/Text&gt;
+
+    <span class="comment">{/* ✅ SAFE: always a string */}</span>
+    &lt;Text&gt;{safeText(user.name, <span class="string">'Guest'</span>)}&lt;/Text&gt;
+    &lt;Text&gt;{safePrice(user.balance)}&lt;/Text&gt;
+    &lt;Text&gt;{safeText(user.isActive)}&lt;/Text&gt; <span class="comment">{/* 'Yes' / 'No' */}</span>
+  &lt;/View&gt;
+);
+
+<span class="comment">// ─── Safe List Render ─────────────────────────────────</span>
+<span class="keyword">const</span> ProductList = ({ data }) => {
+  <span class="keyword">const</span> safeData = normalizeArray(data?.products ?? data?.items ?? data);
+  
+  <span class="keyword">return</span> (
+    &lt;FlatList
+      data={safeData}
+      keyExtractor={(item, idx) => safeText(item?.id, <span class="string">`item-\${idx}`</span>)}
+      renderItem={({ item }) =&gt; (
+        &lt;Text&gt;{safeText(item?.name)}&lt;/Text&gt;
+      )}
+      ListEmptyComponent={&lt;EmptyState /&gt;}
+    /&gt;
+  );
+};
+                </div>
+
+                <h3>📊 API Response Inconsistency Table</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Problem</th>
+                                <th>API दे सकती है</th>
+                                <th>Expected</th>
+                                <th>Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Field Name Change</td><td>user_id vs userId</td><td>id</td><td><code>raw.id ?? raw.user_id ?? raw.userId</code></td></tr>
+                            <tr><td>Number as String</td><td>"123"</td><td>123</td><td><code>normalizeNumber(val)</code></td></tr>
+                            <tr><td>Boolean as String</td><td>"true"</td><td>true</td><td><code>normalizeBoolean(val)</code></td></tr>
+                            <tr><td>Array as Object</td><td>{0: x, 1: y}</td><td>[x, y]</td><td><code>Object.values(val)</code></td></tr>
+                            <tr><td>Null String</td><td>"null"</td><td>null</td><td><code>val === "null" ? null : val</code></td></tr>
+                            <tr><td>Empty String as Null</td><td>""</td><td>null</td><td><code>val || null</code></td></tr>
+                            <tr><td>Date Format</td><td>Unix/ISO/String</td><td>ISO String</td><td><code>normalizeDate(val)</code></td></tr>
+                            <tr><td>Nested vs Flat</td><td>address.city vs city</td><td>address.city</td><td><code>normalizeAddress(raw.address ?? raw)</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION: UI CRASH PROTECTION GUARDS -->
+            <section id="crashguards" class="section">
+                <h2><span class="emoji">💥</span>UI Crash Protection Guards</h2>
+
+                <div class="alert alert-danger">
+                    <strong>React Native में UI crash क्यों होती है?</strong><br>
+                    ये crashes production में सबसे ज्यादा होती हैं और users को blank screen दिखती है। नीचे सब common crash scenarios और उनके fixes हैं।
+                </div>
+
+                <h3>🔴 Crash Type 1: Null/Undefined Property Access</h3>
+                <div class="comparison">
+                    <div class="comparison-item wrong">
+                        <h4>❌ CRASH Code</h4>
+                        <div class="code-block"><span class="keyword">const</span> Profile = ({ user }) => (
+  &lt;View&gt;
+    <span class="comment">{/* CRASH if user is null */}</span>
+    &lt;Text&gt;{user.name}&lt;/Text&gt;
+    &lt;Text&gt;{user.email.toLowerCase()}&lt;/Text&gt;
+    &lt;Text&gt;{user.address.city}&lt;/Text&gt;
+    &lt;Image source={{ uri: user.photo.url }} /&gt;
+  &lt;/View&gt;
+);</div>
+                    </div>
+                    <div class="comparison-item correct">
+                        <h4>✅ PROTECTED Code</h4>
+                        <div class="code-block"><span class="keyword">const</span> Profile = ({ user = {} }) => (
+  &lt;View&gt;
+    <span class="comment">{/* Safe with optional chaining */}</span>
+    &lt;Text&gt;{user?.name ?? <span class="string">'Guest'</span>}&lt;/Text&gt;
+    &lt;Text&gt;{user?.email?.toLowerCase() ?? <span class="string">''</span>}&lt;/Text&gt;
+    &lt;Text&gt;{user?.address?.city ?? <span class="string">'N/A'</span>}&lt;/Text&gt;
+    {user?.photo?.url &amp;&amp; (
+      &lt;Image source={{ uri: user.photo.url }} /&gt;
+    )}
+  &lt;/View&gt;
+);</div>
+                    </div>
+                </div>
+
+                <h3>🔴 Crash Type 2: .map() on Non-Array</h3>
+                <div class="comparison">
+                    <div class="comparison-item wrong">
+                        <h4>❌ CRASH Code</h4>
+                        <div class="code-block"><span class="keyword">const</span> List = ({ items }) => (
+  &lt;View&gt;
+    <span class="comment">{/* CRASH if items is null/undefined/string */}</span>
+    {items.map(item => (
+      &lt;Text key={item.id}&gt;{item.name}&lt;/Text&gt;
+    ))}
+  &lt;/View&gt;
+);
+<span class="comment">// API ने [] की जगह null दे दिया → CRASH
+// API ने array की जगह {} दे दिया → CRASH</span></div>
+                    </div>
+                    <div class="comparison-item correct">
+                        <h4>✅ PROTECTED Code</h4>
+                        <div class="code-block"><span class="keyword">const</span> List = ({ items }) => {
+  <span class="comment">// Array check BEFORE .map()</span>
+  <span class="keyword">const</span> safeItems = Array.isArray(items)
+    ? items.filter(Boolean)
+    : [];
+
+  <span class="keyword">if</span> (safeItems.length === <span class="string">0</span>) {
+    <span class="keyword">return</span> &lt;EmptyState /&gt;;
+  }
+
+  <span class="keyword">return</span> (
+    &lt;View&gt;
+      {safeItems.map((item, idx) => (
+        &lt;Text key={item?.id ?? idx}&gt;
+          {item?.name ?? <span class="string">'Unknown'</span>}
+        &lt;/Text&gt;
+      ))}
+    &lt;/View&gt;
+  );
+};</div>
+                    </div>
+                </div>
+
+                <h3>🔴 Crash Type 3: Non-String in &lt;Text&gt; Component</h3>
+                <div class="alert alert-danger">
+                    React Native में &lt;Text&gt; के अंदर सिर्फ String या Number होना चाहिए — Object, Array, Boolean CRASH करते हैं!
+                </div>
+                <div class="comparison">
+                    <div class="comparison-item wrong">
+                        <h4>❌ CRASH Scenarios</h4>
+                        <div class="code-block"><span class="comment">// ❌ Object directly in Text → CRASH</span>
+&lt;Text&gt;{user}&lt;/Text&gt;
+&lt;Text&gt;{user.createdAt}&lt;/Text&gt; <span class="comment">// Date object!</span>
+
+<span class="comment">// ❌ Boolean in Text → CRASH in some RN versions</span>
+&lt;Text&gt;{isActive}&lt;/Text&gt;
+
+<span class="comment">// ❌ Undefined in Text → shows "undefined" string</span>
+&lt;Text&gt;{user.middleName}&lt;/Text&gt;
+
+<span class="comment">// ❌ Array in Text → weird rendering</span>
+&lt;Text&gt;{user.tags}&lt;/Text&gt;</div>
+                    </div>
+                    <div class="comparison-item correct">
+                        <h4>✅ SAFE Rendering</h4>
+                        <div class="code-block"><span class="comment">// ✅ Always convert to string</span>
+&lt;Text&gt;{JSON.stringify(user)}&lt;/Text&gt; <span class="comment">// debug only</span>
+&lt;Text&gt;{user?.createdAt
+  ? <span class="keyword">new</span> Date(user.createdAt).toLocaleDateString()
+  : <span class="string">'N/A'</span>}
+&lt;/Text&gt;
+
+<span class="comment">// ✅ Boolean → readable string</span>
+&lt;Text&gt;{isActive ? <span class="string">'Active'</span> : <span class="string">'Inactive'</span>}&lt;/Text&gt;
+
+<span class="comment">// ✅ Undefined → fallback</span>
+&lt;Text&gt;{user?.middleName ?? <span class="string">''</span>}&lt;/Text&gt;
+
+<span class="comment">// ✅ Array → join as string</span>
+&lt;Text&gt;{(user?.tags ?? []).join(<span class="string">', '</span>)}&lt;/Text&gt;</div>
+                    </div>
+                </div>
+
+                <h3>🔴 Crash Type 4: Error Boundary (Class-Level Crash Protection)</h3>
+                <p>यह React का सबसे important crash guard है — पूरी screen crash होने से बचाता है।</p>
+                <div class="code-block"><span class="comment">// ─── ErrorBoundary Component ─────────────────────────</span>
+<span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;
+<span class="keyword">import</span> { View, Text, TouchableOpacity } <span class="keyword">from</span> <span class="string">'react-native'</span>;
+
+<span class="keyword">class</span> ErrorBoundary <span class="keyword">extends</span> React.Component {
+  <span class="keyword">constructor</span>(props) {
+    <span class="keyword">super</span>(props);
+    <span class="keyword">this</span>.state = { hasError: <span class="keyword">false</span>, error: <span class="keyword">null</span> };
+  }
+
+  <span class="comment">// Error पकड़ो</span>
+  <span class="keyword">static</span> getDerivedStateFromError(error) {
+    <span class="keyword">return</span> { hasError: <span class="keyword">true</span>, error };
+  }
+
+  <span class="comment">// Log करो (Sentry/Crashlytics)</span>
+  componentDidCatch(error, info) {
+    console.error(<span class="string">'[ErrorBoundary]'</span>, error, info);
+    <span class="comment">// Sentry.captureException(error);</span>
+  }
+
+  <span class="keyword">render</span>() {
+    <span class="keyword">if</span> (<span class="keyword">this</span>.state.hasError) {
+      <span class="keyword">return</span> (
+        &lt;View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 }}&gt;
+          &lt;Text style={{ fontSize: 48 }}&gt;⚠️&lt;/Text&gt;
+          &lt;Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 16 }}&gt;
+            Oops! कुछ गड़बड़ हो गई
+          &lt;/Text&gt;
+          &lt;Text style={{ color: '#666', marginTop: 8, textAlign: 'center' }}&gt;
+            {<span class="keyword">this</span>.state.error?.message ?? <span class="string">'Unknown error'</span>}
+          &lt;/Text&gt;
+          &lt;TouchableOpacity
+            onPress={() =&gt; <span class="keyword">this</span>.setState({ hasError: <span class="keyword">false</span>, error: <span class="keyword">null</span> })}
+            style={{ marginTop: 20, backgroundColor: '#667eea', padding: 12, borderRadius: 8 }}&gt;
+            &lt;Text style={{ color: 'white', fontWeight: '600' }}&gt;Try Again&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        &lt;/View&gt;
+      );
+    }
+    <span class="keyword">return</span> <span class="keyword">this</span>.props.children;
+  }
+}
+
+<span class="comment">// ─── Usage — Wrap any risky component ───────────────</span>
+<span class="keyword">const</span> App = () => (
+  &lt;ErrorBoundary&gt;
+    &lt;HomeScreen /&gt;
+  &lt;/ErrorBoundary&gt;
+);
+
+<span class="comment">// Multiple boundaries — granular protection</span>
+<span class="keyword">const</span> HomeScreen = () => (
+  &lt;View&gt;
+    &lt;ErrorBoundary&gt;&lt;UserHeader /&gt;&lt;/ErrorBoundary&gt;
+    &lt;ErrorBoundary&gt;&lt;ProductList /&gt;&lt;/ErrorBoundary&gt;
+    &lt;ErrorBoundary&gt;&lt;RecommendedSection /&gt;&lt;/ErrorBoundary&gt;
+  &lt;/View&gt;
+);
+                </div>
+
+                <h3>🔴 Crash Type 5: FlatList Specific Crashes</h3>
+                <div class="code-block"><span class="comment">// ❌ CRASH: data=null, keyExtractor returns non-string</span>
+&lt;FlatList
+  data={items}                          <span class="comment">// null → CRASH</span>
+  keyExtractor={(item) =&gt; item.id}      <span class="comment">// undefined → CRASH</span>
+  renderItem={({ item }) =&gt; (
+    &lt;Text&gt;{item.name}&lt;/Text&gt;           <span class="comment">// item null → CRASH</span>
+  )}
+/&gt;
+
+<span class="comment">// ✅ SAFE FlatList Pattern</span>
+<span class="keyword">const</span> SafeFlatList = ({ data, renderItem, emptyMessage = <span class="string">'No items'</span> }) => {
+  <span class="keyword">const</span> safeData = Array.isArray(data) ? data.filter(Boolean) : [];
+
+  <span class="keyword">return</span> (
+    &lt;FlatList
+      data={safeData}
+      keyExtractor={(item, index) =&gt; {
+        <span class="comment">// keyExtractor MUST return a string</span>
+        <span class="keyword">const</span> key = item?.id ?? item?.key ?? index;
+        <span class="keyword">return</span> String(key);
+      }}
+      renderItem={({ item, index }) =&gt; {
+        <span class="comment">// Guard each item</span>
+        <span class="keyword">if</span> (!item) <span class="keyword">return</span> <span class="keyword">null</span>;
+        <span class="keyword">return</span> renderItem({ item, index });
+      }}
+      ListEmptyComponent={
+        &lt;View style={{ padding: 40, alignItems: 'center' }}&gt;
+          &lt;Text style={{ color: '#999' }}&gt;{emptyMessage}&lt;/Text&gt;
+        &lt;/View&gt;
+      }
+      removeClippedSubviews={<span class="keyword">true</span>}   <span class="comment">// Performance</span>
+      maxToRenderPerBatch={10}         <span class="comment">// Performance</span>
+    /&gt;
+  );
+};
+                </div>
+
+                <h3>🔴 Crash Type 6: Navigation Crashes</h3>
+                <div class="code-block"><span class="comment">// ❌ CRASH: navigation undefined या params undefined</span>
+<span class="keyword">const</span> GoToProfile = ({ navigation, userId }) => {
+  <span class="keyword">const</span> handlePress = () => {
+    navigation.navigate(<span class="string">'Profile'</span>, { id: userId }); <span class="comment">// CRASH if navigation null</span>
+    <span class="comment">// CRASH if userId undefined</span>
+  };
+};
+
+<span class="comment">// ✅ SAFE Navigation Pattern</span>
+<span class="keyword">const</span> GoToProfile = ({ navigation, userId }) => {
+  <span class="keyword">const</span> handlePress = () => {
+    <span class="comment">// Check navigation exists</span>
+    <span class="keyword">if</span> (!navigation?.navigate) {
+      console.warn(<span class="string">'[Nav] navigation prop missing'</span>);
+      <span class="keyword">return</span>;
+    }
+
+    <span class="comment">// Check required params exist</span>
+    <span class="keyword">if</span> (!userId) {
+      console.warn(<span class="string">'[Nav] userId required for Profile'</span>);
+      <span class="keyword">return</span>;
+    }
+
+    navigation.navigate(<span class="string">'Profile'</span>, {
+      id: String(userId), <span class="comment">// Always pass string</span>
+    });
+  };
+
+  <span class="keyword">return</span> (
+    &lt;TouchableOpacity
+      onPress={handlePress}
+      disabled={!userId}  <span class="comment">// Disable if no userId</span>
+    &gt;
+      &lt;Text&gt;View Profile&lt;/Text&gt;
+    &lt;/TouchableOpacity&gt;
+  );
+};
+
+<span class="comment">// ─── Safe Route Params Reading ────────────────────────</span>
+<span class="keyword">const</span> ProfileScreen = ({ route }) => {
+  <span class="comment">// Never assume params exist</span>
+  <span class="keyword">const</span> userId = route?.params?.id ?? route?.params?.userId ?? <span class="keyword">null</span>;
+
+  <span class="keyword">if</span> (!userId) {
+    <span class="keyword">return</span> &lt;ErrorFallback message={<span class="string">"Invalid navigation"</span>} /&gt;;
+  }
+
+  <span class="keyword">return</span> &lt;UserProfile id={userId} /&gt;;
+};
+                </div>
+
+                <h3>🔴 Crash Type 7: Async State Update After Unmount</h3>
+                <div class="code-block"><span class="comment">// ❌ CRASH: setState called on unmounted component</span>
+<span class="keyword">const</span> DataScreen = () => {
+  <span class="keyword">const</span> [data, setData] = useState(<span class="keyword">null</span>);
+
+  useEffect(() => {
+    fetchUserData().then(res => {
+      setData(res);  <span class="comment">// CRASH if component unmounted!</span>
+    });
+  }, []);
+};
+
+<span class="comment">// ✅ SAFE — Check mounted before setState</span>
+<span class="keyword">const</span> DataScreen = () => {
+  <span class="keyword">const</span> [data, setData] = useState(<span class="keyword">null</span>);
+
+  useEffect(() => {
+    <span class="keyword">let</span> isMounted = <span class="keyword">true</span>;
+    <span class="keyword">const</span> controller = <span class="keyword">new</span> AbortController();
+
+    <span class="keyword">const</span> load = <span class="keyword">async</span> () => {
+      <span class="keyword">try</span> {
+        <span class="keyword">const</span> res = <span class="keyword">await</span> fetchUserData({ signal: controller.signal });
+        <span class="keyword">const</span> normalized = normalizeApiResponse(res);
+        
+        <span class="keyword">if</span> (isMounted) setData(normalized); <span class="comment">// ✅ Check first!</span>
+      } <span class="keyword">catch</span> (err) {
+        <span class="keyword">if</span> (isMounted && err.name !== <span class="string">'AbortError'</span>) {
+          setError(err.message);
+        }
+      }
+    };
+
+    load();
+
+    <span class="keyword">return</span> () => {
+      isMounted = <span class="keyword">false</span>;    <span class="comment">// Cleanup flag</span>
+      controller.abort();    <span class="comment">// Cancel request</span>
+    };
+  }, []);
+};
+                </div>
+
+                <h3>🔴 Crash Type 8: useRef Null Access</h3>
+                <div class="code-block"><span class="comment">// ❌ CRASH: ref.current is null</span>
+<span class="keyword">const</span> Form = () => {
+  <span class="keyword">const</span> inputRef = useRef(<span class="keyword">null</span>);
+
+  <span class="keyword">const</span> handleSubmit = () => {
+    inputRef.current.focus();        <span class="comment">// CRASH if ref not attached</span>
+    inputRef.current.clear();        <span class="comment">// CRASH!</span>
+  };
+};
+
+<span class="comment">// ✅ SAFE — Optional chaining on .current</span>
+<span class="keyword">const</span> Form = () => {
+  <span class="keyword">const</span> inputRef = useRef(<span class="keyword">null</span>);
+
+  <span class="keyword">const</span> handleSubmit = () => {
+    inputRef.current?.focus();   <span class="comment">// ✅ Safe</span>
+    inputRef.current?.clear();   <span class="comment">// ✅ Safe</span>
+  };
+};
+                </div>
+
+                <h3>📋 Crash Protection Quick Reference</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Crash Scenario</th>
+                                <th>Cause</th>
+                                <th>Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>null.name</code></td><td>Null prop access</td><td><code>user?.name ?? 'Default'</code></td></tr>
+                            <tr><td><code>null.map()</code></td><td>Non-array .map()</td><td><code>Array.isArray(x) ? x.map() : []</code></td></tr>
+                            <tr><td>Object in &lt;Text&gt;</td><td>Wrong type render</td><td><code>safeText(val)</code> helper</td></tr>
+                            <tr><td>Blank Screen</td><td>Unhandled render error</td><td>Wrap in <code>&lt;ErrorBoundary&gt;</code></td></tr>
+                            <tr><td>FlatList blank</td><td>data=null</td><td><code>data={Array.isArray(x) ? x : []}</code></td></tr>
+                            <tr><td>Navigation crash</td><td>No params check</td><td>Guard params before navigate</td></tr>
+                            <tr><td>setState unmounted</td><td>Async race condition</td><td><code>isMounted</code> flag + cleanup</td></tr>
+                            <tr><td>ref.current crash</td><td>Ref not attached</td><td><code>ref.current?.method()</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            </section>
+
+            <!-- SECTION: HTTP STATUS CODES -->
+            <section id="httpcodes" class="section">
+                <h2><span class="emoji">📡</span>HTTP Status Code Handling</h2>
+
+                <div class="alert alert-warning">
+                    <strong>सबसे बड़ी गलती:</strong> सिर्फ <code>if (!response.ok)</code> check करना — इससे सारे errors एक जैसे handle होते हैं। हर status code का अलग मतलब है और अलग UI response होनी चाहिए।
+                </div>
+
+                <h3>📊 Status Code → UI Action Table</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Status Code</th><th>Meaning</th><th>User को दिखाओ</th><th>Action</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background:#f0f4ff"><td><strong>200 OK</strong></td><td>Success</td><td>Data / Success message</td><td>Normal render</td></tr>
+                            <tr style="background:#f0f4ff"><td><strong>201 Created</strong></td><td>Resource बना</td><td>"Successfully created ✓"</td><td>Show success toast</td></tr>
+                            <tr style="background:#fff3f0"><td><strong>400 Bad Request</strong></td><td>Request गलत है</td><td>"Invalid request data"</td><td>Check request body</td></tr>
+                            <tr style="background:#ffebee"><td><strong>401 Unauthorized</strong></td><td>Token expired/missing</td><td>"Session expired, login again"</td><td>Clear tokens → Login screen</td></tr>
+                            <tr style="background:#fff8e1"><td><strong>403 Forbidden</strong></td><td>Permission नहीं</td><td>"Access denied"</td><td>Show access denied UI</td></tr>
+                            <tr style="background:#f3e5f5"><td><strong>404 Not Found</strong></td><td>Resource नहीं मिला</td><td>"Not found"</td><td>Show 404 empty state</td></tr>
+                            <tr style="background:#e8f5e9"><td><strong>422 Unprocessable</strong></td><td>Validation failed (server)</td><td>Field-level errors</td><td>Map errors to form fields</td></tr>
+                            <tr style="background:#fff3e0"><td><strong>429 Too Many</strong></td><td>Rate limited</td><td>"Too many requests, wait Xs"</td><td>Read Retry-After header</td></tr>
+                            <tr style="background:#ffebee"><td><strong>500 Server Error</strong></td><td>Server crash</td><td>"Server error, try later"</td><td>Retry button + report</td></tr>
+                            <tr style="background:#ffebee"><td><strong>503 Unavailable</strong></td><td>Server down</td><td>"Service unavailable"</td><td>Show maintenance UI</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Complete HTTP Status Handler</h3>
+                <div class="code-block"><span class="comment">// ─── handleHttpStatus() — हर status को differently handle करो ───</span>
+<span class="keyword">const</span> handleHttpError = <span class="keyword">async</span> (response) => {
+  <span class="comment">// Try to read error body (server कुछ useful दे सकता है)</span>
+  <span class="keyword">let</span> errorBody = <span class="keyword">null</span>;
+  <span class="keyword">try</span> {
+    errorBody = <span class="keyword">await</span> response.json();
+  } <span class="keyword">catch</span> {
+    <span class="comment">// Body parse न हो तो ignore करो</span>
+  }
+
+  <span class="keyword">switch</span> (response.status) {
+
+    <span class="keyword">case</span> <span class="string">400</span>:
+      <span class="keyword">throw</span> {
+        type: <span class="string">'BAD_REQUEST'</span>,
+        message: errorBody?.message ?? <span class="string">'Invalid request. Please check your input.'</span>,
+        fields: errorBody?.errors ?? {},     <span class="comment">// field-level errors</span>
+      };
+
+    <span class="keyword">case</span> <span class="string">401</span>:
+      <span class="comment">// Token expired → clear storage → redirect to login</span>
+      <span class="keyword">await</span> AsyncStorage.multiRemove([<span class="string">'token'</span>, <span class="string">'refreshToken'</span>]);
+      <span class="keyword">throw</span> {
+        type: <span class="string">'UNAUTHORIZED'</span>,
+        message: <span class="string">'Session expired. Please login again.'</span>,
+        redirectToLogin: <span class="keyword">true</span>,             <span class="comment">// caller इसे handle करे</span>
+      };
+
+    <span class="keyword">case</span> <span class="string">403</span>:
+      <span class="keyword">throw</span> {
+        type: <span class="string">'FORBIDDEN'</span>,
+        message: <span class="string">'You do not have permission to perform this action.'</span>,
+      };
+
+    <span class="keyword">case</span> <span class="string">404</span>:
+      <span class="keyword">throw</span> {
+        type: <span class="string">'NOT_FOUND'</span>,
+        message: errorBody?.message ?? <span class="string">'The requested resource was not found.'</span>,
+      };
+
+    <span class="keyword">case</span> <span class="string">422</span>:
+      <span class="keyword">throw</span> {
+        type: <span class="string">'VALIDATION_ERROR'</span>,
+        message: <span class="string">'Please fix the errors below.'</span>,
+        fields: errorBody?.errors ?? errorBody?.validationErrors ?? {},
+      };
+
+    <span class="keyword">case</span> <span class="string">429</span>: {
+      <span class="comment">// Read Retry-After header if available</span>
+      <span class="keyword">const</span> retryAfter = response.headers.get(<span class="string">'Retry-After'</span>) ?? <span class="string">'60'</span>;
+      <span class="keyword">throw</span> {
+        type: <span class="string">'RATE_LIMITED'</span>,
+        message: <span class="string">`Too many requests. Try again in \${retryAfter} seconds.`</span>,
+        retryAfterSeconds: parseInt(retryAfter, <span class="string">10</span>),
+      };
+    }
+
+    <span class="keyword">case</span> <span class="string">500</span>:
+    <span class="keyword">case</span> <span class="string">502</span>:
+    <span class="keyword">case</span> <span class="string">503</span>:
+      <span class="keyword">throw</span> {
+        type: <span class="string">'SERVER_ERROR'</span>,
+        message: <span class="string">'Something went wrong on our end. Please try again later.'</span>,
+        isRetryable: <span class="keyword">true</span>,               <span class="comment">// Retry button दिखाएँ</span>
+      };
+
+    <span class="keyword">default</span>:
+      <span class="keyword">throw</span> {
+        type: <span class="string">'UNKNOWN_ERROR'</span>,
+        message: <span class="string">`Unexpected error (${response.status})`</span>,
+      };
+  }
+};
+
+<span class="comment">// ─── Usage in fetch ──────────────────────────────────</span>
+<span class="keyword">const</span> apiCall = <span class="keyword">async</span> (url, options = {}) => {
+  <span class="keyword">const</span> response = <span class="keyword">await</span> fetch(url, options);
+
+  <span class="keyword">if</span> (!response.ok) {
+    <span class="keyword">await</span> handleHttpError(response); <span class="comment">// throws structured error</span>
+  }
+
+  <span class="keyword">return</span> response.json();
+};
+                </div>
+
+                <h3>Error Type को UI में Handle करना</h3>
+                <div class="code-block"><span class="keyword">const</span> submitForm = <span class="keyword">async</span> () => {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> data = <span class="keyword">await</span> apiCall(<span class="string">'/api/signup'</span>, { method: <span class="string">'POST'</span>, body: formData });
+    setSuccess(<span class="keyword">true</span>);
+
+  } <span class="keyword">catch</span> (err) {
+
+    <span class="keyword">switch</span> (err.type) {
+
+      <span class="keyword">case</span> <span class="string">'VALIDATION_ERROR'</span>:
+      <span class="keyword">case</span> <span class="string">'BAD_REQUEST'</span>:
+        <span class="comment">// Form fields पर errors दिखाओ</span>
+        setFieldErrors(err.fields ?? {});
+        setFormError(err.message);
+        <span class="keyword">break</span>;
+
+      <span class="keyword">case</span> <span class="string">'UNAUTHORIZED'</span>:
+        <span class="comment">// Login screen पर redirect</span>
+        <span class="keyword">if</span> (err.redirectToLogin) {
+          navigation.reset({ index: <span class="string">0</span>, routes: [{ name: <span class="string">'Login'</span> }] });
+        }
+        <span class="keyword">break</span>;
+
+      <span class="keyword">case</span> <span class="string">'FORBIDDEN'</span>:
+        setScreenError(<span class="string">'🚫 Access Denied'</span>);
+        <span class="keyword">break</span>;
+
+      <span class="keyword">case</span> <span class="string">'NOT_FOUND'</span>:
+        setScreenError(<span class="string">'😕 Not Found'</span>);
+        <span class="keyword">break</span>;
+
+      <span class="keyword">case</span> <span class="string">'RATE_LIMITED'</span>:
+        <span class="comment">// Countdown timer दिखाओ</span>
+        startRetryCountdown(err.retryAfterSeconds ?? <span class="string">60</span>);
+        <span class="keyword">break</span>;
+
+      <span class="keyword">case</span> <span class="string">'SERVER_ERROR'</span>:
+        <span class="comment">// Retry button के साथ error दिखाओ</span>
+        setScreenError({ message: err.message, isRetryable: <span class="keyword">true</span> });
+        <span class="keyword">break</span>;
+
+      <span class="keyword">default</span>:
+        <span class="comment">// Network errors, timeout, etc.</span>
+        <span class="keyword">if</span> (err.name === <span class="string">'AbortError'</span>) {
+          setFormError(<span class="string">'Request timed out. Check your connection.'</span>);
+        } <span class="keyword">else</span> <span class="keyword">if</span> (err <span class="keyword">instanceof</span> TypeError) {
+          setFormError(<span class="string">'No internet connection.'</span>);
+        } <span class="keyword">else</span> {
+          setFormError(err.message ?? <span class="string">'Something went wrong.'</span>);
+        }
+    }
+  }
+};
+                </div>
+
+                <h3>401 — Auto Token Refresh Pattern</h3>
+                <div class="code-block"><span class="comment">// जब 401 आए → Token refresh करो → Original request retry करो</span>
+<span class="keyword">let</span> isRefreshing = <span class="keyword">false</span>;
+<span class="keyword">let</span> refreshQueue = [];   <span class="comment">// parallel requests जो token का wait कर रही हैं</span>
+
+<span class="keyword">const</span> apiCallWithRefresh = <span class="keyword">async</span> (url, options = {}) => {
+  <span class="keyword">const</span> token = <span class="keyword">await</span> AsyncStorage.getItem(<span class="string">'token'</span>);
+  
+  <span class="keyword">const</span> response = <span class="keyword">await</span> fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: <span class="string">`Bearer \${token}`</span>,
+    },
+  });
+
+  <span class="comment">// 401 आया → refresh करो</span>
+  <span class="keyword">if</span> (response.status === <span class="string">401</span> && !options._retried) {
+    <span class="keyword">if</span> (isRefreshing) {
+      <span class="comment">// दूसरी request पहले से refresh कर रही है — queue में wait करो</span>
+      <span class="keyword">return</span> <span class="keyword">new</span> Promise((resolve) => {
+        refreshQueue.push(resolve);
+      }).then(() => apiCallWithRefresh(url, { ...options, _retried: <span class="keyword">true</span> }));
+    }
+
+    isRefreshing = <span class="keyword">true</span>;
+    <span class="keyword">try</span> {
+      <span class="keyword">const</span> refreshToken = <span class="keyword">await</span> AsyncStorage.getItem(<span class="string">'refreshToken'</span>);
+      <span class="keyword">const</span> refreshRes = <span class="keyword">await</span> fetch(<span class="string">'/api/auth/refresh'</span>, {
+        method: <span class="string">'POST'</span>,
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      <span class="keyword">if</span> (!refreshRes.ok) <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'Refresh failed'</span>);
+
+      <span class="keyword">const</span> { token: newToken } = <span class="keyword">await</span> refreshRes.json();
+      <span class="keyword">await</span> AsyncStorage.setItem(<span class="string">'token'</span>, newToken);
+
+      <span class="comment">// Queue में wait कर रही requests को release करो</span>
+      refreshQueue.forEach(resolve => resolve());
+      refreshQueue = [];
+
+      <span class="comment">// Original request retry करो</span>
+      <span class="keyword">return</span> apiCallWithRefresh(url, { ...options, _retried: <span class="keyword">true</span> });
+
+    } <span class="keyword">catch</span> {
+      <span class="comment">// Refresh भी fail हो गया → Logout</span>
+      <span class="keyword">await</span> AsyncStorage.multiRemove([<span class="string">'token'</span>, <span class="string">'refreshToken'</span>]);
+      navigation.reset({ index: <span class="string">0</span>, routes: [{ name: <span class="string">'Login'</span> }] });
+    } <span class="keyword">finally</span> {
+      isRefreshing = <span class="keyword">false</span>;
+    }
+  }
+
+  <span class="keyword">return</span> response;
+};
+                </div>
+            </section>
+
+            <!-- SECTION: RETRY LOGIC & RACE CONDITIONS -->
+            <section id="retry" class="section">
+                <h2><span class="emoji">🔁</span>Retry Logic & Race Condition Protection</h2>
+
+                <div class="alert alert-info">
+                    <strong>यह section दो अलग problems solve करता है:</strong><br>
+                    1. <strong>Retry Logic</strong> — Request fail हो तो automatically retry करो<br>
+                    2. <strong>Race Conditions</strong> — Multiple requests में सिर्फ latest response use करो
+                </div>
+
+                <h3>1️⃣ Exponential Backoff Retry</h3>
+                <p>हर retry पर wait time बढ़ता है — server को recover होने का time देता है।</p>
+                <div class="code-block"><span class="comment">// ─── Delay Helper ────────────────────────────────────</span>
+<span class="keyword">const</span> delay = (ms) => <span class="keyword">new</span> Promise(resolve => setTimeout(resolve, ms));
+
+<span class="comment">// ─── fetchWithRetry() — Exponential Backoff ──────────</span>
+<span class="keyword">const</span> fetchWithRetry = <span class="keyword">async</span> (url, options = {}, config = {}) => {
+  <span class="keyword">const</span> {
+    maxRetries = <span class="string">3</span>,         <span class="comment">// कितनी बार retry करें</span>
+    baseDelay = <span class="string">1000</span>,       <span class="comment">// पहली retry: 1 second</span>
+    maxDelay = <span class="string">10000</span>,       <span class="comment">// maximum wait: 10 seconds</span>
+    retryOn = [<span class="string">500</span>, <span class="string">502</span>, <span class="string">503</span>, <span class="string">504</span>],  <span class="comment">// किन status codes पर retry करें</span>
+  } = config;
+
+  <span class="keyword">let</span> lastError;
+
+  <span class="keyword">for</span> (<span class="keyword">let</span> attempt = <span class="string">0</span>; attempt &lt; maxRetries; attempt++) {
+
+    <span class="keyword">try</span> {
+      <span class="keyword">const</span> response = <span class="keyword">await</span> fetch(url, options);
+
+      <span class="comment">// Success या client error (4xx) पर retry मत करो</span>
+      <span class="keyword">if</span> (response.ok || (response.status &lt; <span class="string">500</span> && response.status !== <span class="string">429</span>)) {
+        <span class="keyword">return</span> response;
+      }
+
+      <span class="comment">// 429 Rate Limit — Retry-After header पढ़ो</span>
+      <span class="keyword">if</span> (response.status === <span class="string">429</span>) {
+        <span class="keyword">const</span> retryAfterMs = (parseInt(response.headers.get(<span class="string">'Retry-After'</span>) ?? <span class="string">'5'</span>, <span class="string">10</span>)) * <span class="string">1000</span>;
+        <span class="keyword">await</span> delay(retryAfterMs);
+        <span class="keyword">continue</span>;
+      }
+
+      <span class="comment">// 5xx errors → retry with backoff</span>
+      <span class="keyword">if</span> (!retryOn.includes(response.status)) {
+        <span class="keyword">return</span> response;       <span class="comment">// Retry नहीं होगा</span>
+      }
+
+      lastError = <span class="keyword">new</span> Error(<span class="string">`HTTP \${response.status}`</span>);
+
+    } <span class="keyword">catch</span> (err) {
+      <span class="comment">// Network error या timeout → retry</span>
+      <span class="keyword">if</span> (err.name === <span class="string">'AbortError'</span>) <span class="keyword">throw</span> err;   <span class="comment">// Timeout: never retry</span>
+      lastError = err;
+    }
+
+    <span class="comment">// Exponential backoff: attempt 0 → 1s, 1 → 2s, 2 → 4s</span>
+    <span class="keyword">if</span> (attempt &lt; maxRetries - <span class="string">1</span>) {
+      <span class="keyword">const</span> waitTime = Math.min(baseDelay * Math.pow(<span class="string">2</span>, attempt), maxDelay);
+      console.log(<span class="string">`[Retry] Attempt \${attempt + 1} failed. Waiting \${waitTime}ms...`</span>);
+      <span class="keyword">await</span> delay(waitTime);
+    }
+  }
+
+  <span class="keyword">throw</span> lastError ?? <span class="keyword">new</span> Error(<span class="string">'Max retries exceeded'</span>);
+};
+
+<span class="comment">// ─── Usage ───────────────────────────────────────────</span>
+<span class="keyword">const</span> response = <span class="keyword">await</span> fetchWithRetry(
+  <span class="string">'/api/products'</span>,
+  { method: <span class="string">'GET'</span>, signal: controller.signal },
+  { maxRetries: <span class="string">3</span>, retryOn: [<span class="string">500</span>, <span class="string">503</span>] }
+);
+                </div>
+
+                <h3>Retry Progress UI दिखाना</h3>
+                <div class="code-block"><span class="keyword">const</span> [retryStatus, setRetryStatus] = useState(<span class="keyword">null</span>);
+<span class="comment">// null | { attempt: 1, maxAttempts: 3, waitingMs: 2000 }</span>
+
+<span class="comment">// Retry होने पर UI update करो</span>
+<span class="keyword">const</span> fetchWithRetryUI = <span class="keyword">async</span> (url, options, config) => {
+  <span class="keyword">const</span> { maxRetries = <span class="string">3</span> } = config;
+
+  <span class="keyword">for</span> (<span class="keyword">let</span> attempt = <span class="string">0</span>; attempt &lt; maxRetries; attempt++) {
+    <span class="keyword">if</span> (attempt &gt; <span class="string">0</span>) {
+      <span class="keyword">const</span> waitMs = <span class="string">1000</span> * Math.pow(<span class="string">2</span>, attempt - <span class="string">1</span>);
+      <span class="comment">// UI को बताओ retry हो रही है</span>
+      setRetryStatus({ attempt, maxAttempts: maxRetries, waitingMs: waitMs });
+      <span class="keyword">await</span> delay(waitMs);
+    }
+    <span class="keyword">try</span> {
+      <span class="keyword">const</span> res = <span class="keyword">await</span> fetch(url, options);
+      setRetryStatus(<span class="keyword">null</span>);
+      <span class="keyword">return</span> res;
+    } <span class="keyword">catch</span> (err) {
+      <span class="keyword">if</span> (attempt === maxRetries - <span class="string">1</span>) <span class="keyword">throw</span> err;
+    }
+  }
+};
+
+<span class="comment">// In JSX:</span>
+{retryStatus && (
+  &lt;Text style={{ color: <span class="string">'#ff9800'</span> }}&gt;
+    ⏳ Retrying ({retryStatus.attempt}/{retryStatus.maxAttempts})...
+  &lt;/Text&gt;
+)}
+                </div>
+
+                <h3>2️⃣ Race Condition Protection</h3>
+                <p>User rapidly scroll/navigate करे तो पुरानी response नई state overwrite कर सकती है।</p>
+
+                <div class="comparison">
+                    <div class="comparison-item wrong">
+                        <h4>❌ Race Condition Problem</h4>
+                        <div class="code-block"><span class="comment">// User search करता है: "app" → "apple"
+// Request 1 (slow): "app" → 2s बाद आती है
+// Request 2 (fast): "apple" → 0.5s बाद आती है
+// Result: "apple" results दिखेंगे फिर "app" 
+//         results overwrite कर देंगी! ❌</span>
+
+<span class="keyword">const</span> search = <span class="keyword">async</span> (query) => {
+  <span class="keyword">const</span> res = <span class="keyword">await</span> fetch(<span class="string">`/api/search?q=\${query}`</span>);
+  <span class="keyword">const</span> data = <span class="keyword">await</span> res.json();
+  setResults(data);  <span class="comment">// ❌ कौनसी request? पता नहीं!</span>
+};</div>
+                    </div>
+                    <div class="comparison-item correct">
+                        <h4>✅ useRef से Race Condition Fix</h4>
+                        <div class="code-block"><span class="keyword">const</span> currentRequestId = useRef(<span class="string">0</span>);
+
+<span class="keyword">const</span> search = <span class="keyword">async</span> (query) => {
+  <span class="comment">// हर request को unique ID दो</span>
+  <span class="keyword">const</span> requestId = ++currentRequestId.current;
+
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> res = <span class="keyword">await</span> fetch(<span class="string">`/api/search?q=\${query}`</span>);
+    <span class="keyword">const</span> data = <span class="keyword">await</span> res.json();
+
+    <span class="comment">// Check: क्या यह LATEST request है?</span>
+    <span class="keyword">if</span> (requestId === currentRequestId.current) {
+      setResults(data);  <span class="comment">// ✅ सिर्फ latest response use करो</span>
+    } <span class="comment">// पुरानी response silently discard होती है</span>
+
+  } <span class="keyword">catch</span> (err) {
+    <span class="keyword">if</span> (requestId === currentRequestId.current) {
+      setError(err.message);
+    }
+  }
+};</div>
+                    </div>
+                </div>
+
+                <h3>AbortController से Race Condition — Previous Request Cancel करो</h3>
+                <div class="code-block"><span class="keyword">const</span> controllerRef = useRef(<span class="keyword">null</span>);
+
+<span class="keyword">const</span> search = <span class="keyword">async</span> (query) => {
+  <span class="comment">// पिछली request cancel करो</span>
+  controllerRef.current?.abort();
+  controllerRef.current = <span class="keyword">new</span> AbortController();
+
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> res = <span class="keyword">await</span> fetch(<span class="string">`/api/search?q=\${query}`</span>, {
+      signal: controllerRef.current.signal,
+    });
+    <span class="keyword">const</span> data = <span class="keyword">await</span> res.json();
+    setResults(data);
+
+  } <span class="keyword">catch</span> (err) {
+    <span class="keyword">if</span> (err.name !== <span class="string">'AbortError'</span>) {
+      <span class="comment">// Real error — AbortError ignore करो</span>
+      setError(err.message);
+    }
+  }
+};
+
+<span class="comment">// Cleanup on unmount</span>
+useEffect(() => {
+  <span class="keyword">return</span> () => controllerRef.current?.abort();
+}, []);
+                </div>
+
+                <h3>3️⃣ Debounce — Search Input Race Prevention</h3>
+                <div class="code-block"><span class="keyword">import</span> { useCallback, useRef } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="keyword">const</span> useDebounce = (callback, delay = <span class="string">500</span>) => {
+  <span class="keyword">const</span> timerRef = useRef(<span class="keyword">null</span>);
+
+  <span class="keyword">return</span> useCallback((...args) => {
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => callback(...args), delay);
+  }, [callback, delay]);
+};
+
+<span class="comment">// Usage — User typing रोके तो 500ms बाद search करो</span>
+<span class="keyword">const</span> SearchScreen = () => {
+  <span class="keyword">const</span> debouncedSearch = useDebounce(<span class="keyword">async</span> (query) => {
+    <span class="keyword">if</span> (query.trim().length &lt; <span class="string">2</span>) <span class="keyword">return</span>;  <span class="comment">// Minimum chars</span>
+    <span class="keyword">await</span> search(query);
+  }, <span class="string">500</span>);
+
+  <span class="keyword">return</span> (
+    &lt;TextInput
+      onChangeText={debouncedSearch}
+      placeholder={<span class="string">"Search..."</span>}
+    /&gt;
+  );
+};
+                </div>
+            </section>
+
+            <!-- SECTION: SERVER-SIDE VALIDATION ERRORS -->
+            <section id="servererrors" class="section">
+                <h2><span class="emoji">🖥️</span>Server-Side Validation Errors (422)</h2>
+
+                <div class="alert alert-warning">
+                    <strong>422 vs 400 का फर्क:</strong><br>
+                    <strong>400</strong> = Request format गलत (missing fields, wrong JSON)<br>
+                    <strong>422</strong> = Format सही है लेकिन business logic fail हुई (email already taken, password too weak)
+                </div>
+
+                <h3>API कौन सा Error Format दे सकती है?</h3>
+                <div class="code-block"><span class="comment">// Format A: Simple object</span>
+{ <span class="string">"errors"</span>: { <span class="string">"email"</span>: <span class="string">"Email already registered"</span>, <span class="string">"phone"</span>: <span class="string">"Invalid format"</span> } }
+
+<span class="comment">// Format B: Array of error objects</span>
+{ <span class="string">"errors"</span>: [
+  { <span class="string">"field"</span>: <span class="string">"email"</span>, <span class="string">"message"</span>: <span class="string">"Email already taken"</span> },
+  { <span class="string">"field"</span>: <span class="string">"password"</span>, <span class="string">"message"</span>: <span class="string">"Too weak"</span>, <span class="string">"code"</span>: <span class="string">"PASSWORD_WEAK"</span> }
+]}
+
+<span class="comment">// Format C: Nested (Laravel style)</span>
+{ <span class="string">"errors"</span>: { <span class="string">"email"</span>: [<span class="string">"Email already taken"</span>, <span class="string">"Must be valid email"</span>] } }
+
+<span class="comment">// Format D: Top-level message only</span>
+{ <span class="string">"message"</span>: <span class="string">"Validation failed"</span>, <span class="string">"error_code"</span>: <span class="string">"USER_EXISTS"</span> }
+                </div>
+
+                <h3>Universal Server Error Normalizer</h3>
+                <div class="code-block"><span class="comment">// ─── parseServerErrors() — किसी भी format को handle करो ────</span>
+<span class="keyword">const</span> parseServerErrors = (errorBody = {}) => {
+  <span class="comment">// Result shape: { email: 'msg', phone: 'msg', _general: 'msg' }</span>
+  <span class="keyword">const</span> fieldErrors = {};
+
+  <span class="keyword">const</span> raw = errorBody?.errors ?? errorBody?.validationErrors ?? errorBody?.error ?? <span class="keyword">null</span>;
+
+  <span class="keyword">if</span> (!raw) {
+    <span class="comment">// No structured errors — general error</span>
+    fieldErrors._general = errorBody?.message ?? <span class="string">'Validation failed'</span>;
+    <span class="keyword">return</span> fieldErrors;
+  }
+
+  <span class="comment">// Format A: { email: 'msg' } — Simple object</span>
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> raw === <span class="string">'object'</span> && !Array.isArray(raw)) {
+    Object.entries(raw).forEach(([field, msg]) => {
+      <span class="comment">// Format C handling: { email: ['msg1', 'msg2'] } → take first</span>
+      fieldErrors[field] = Array.isArray(msg) ? msg[<span class="string">0</span>] : String(msg ?? <span class="string">''</span>);
+    });
+    <span class="keyword">return</span> fieldErrors;
+  }
+
+  <span class="comment">// Format B: [{ field: 'email', message: 'msg' }] — Array</span>
+  <span class="keyword">if</span> (Array.isArray(raw)) {
+    raw.forEach(err => {
+      <span class="keyword">const</span> field = err?.field ?? err?.param ?? err?.path ?? <span class="string">'_general'</span>;
+      <span class="keyword">const</span> msg   = err?.message ?? err?.msg ?? err?.error ?? <span class="string">'Invalid'</span>;
+      fieldErrors[field] = String(msg);
+    });
+    <span class="keyword">return</span> fieldErrors;
+  }
+
+  <span class="comment">// Format D: String error message</span>
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> raw === <span class="string">'string'</span>) {
+    fieldErrors._general = raw;
+    <span class="keyword">return</span> fieldErrors;
+  }
+
+  fieldErrors._general = <span class="string">'Please check your inputs and try again.'</span>;
+  <span class="keyword">return</span> fieldErrors;
+};
+                </div>
+
+                <h3>Form Field Level Errors दिखाना</h3>
+                <div class="code-block"><span class="keyword">const</span> SignupForm = () => {
+  <span class="keyword">const</span> [formData, setFormData] = useState({ email: <span class="string">''</span>, password: <span class="string">''</span> });
+  <span class="keyword">const</span> [serverErrors, setServerErrors] = useState({});
+  <span class="comment">// serverErrors: { email: 'already taken', password: 'too weak', _general: '...' }</span>
+
+  <span class="keyword">const</span> handleSubmit = <span class="keyword">async</span> () => {
+    setServerErrors({});   <span class="comment">// Previous errors clear करो</span>
+
+    <span class="keyword">try</span> {
+      <span class="keyword">const</span> res = <span class="keyword">await</span> fetch(<span class="string">'/api/signup'</span>, {
+        method: <span class="string">'POST'</span>,
+        headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
+        body: JSON.stringify(formData),
+      });
+
+      <span class="keyword">const</span> body = <span class="keyword">await</span> res.json();
+
+      <span class="keyword">if</span> (res.status === <span class="string">422</span> || res.status === <span class="string">400</span>) {
+        <span class="comment">// Server validation errors → form fields पर दिखाओ</span>
+        <span class="keyword">const</span> errors = parseServerErrors(body);
+        setServerErrors(errors);
+        <span class="keyword">return</span>;
+      }
+
+      <span class="keyword">if</span> (!res.ok) {
+        <span class="keyword">await</span> handleHttpError(res);   <span class="comment">// Other HTTP errors</span>
+      }
+
+      <span class="comment">// ✅ Success</span>
+      navigation.replace(<span class="string">'Dashboard'</span>);
+
+    } <span class="keyword">catch</span> (err) {
+      setServerErrors({ _general: err.message ?? <span class="string">'Something went wrong'</span> });
+    }
+  };
+
+  <span class="keyword">return</span> (
+    &lt;View&gt;
+      <span class="comment">{/* General error banner */}</span>
+      {serverErrors._general && (
+        &lt;View style={{ backgroundColor: <span class="string">'#ffebee'</span>, padding: 12, borderRadius: 8 }}&gt;
+          &lt;Text style={{ color: <span class="string">'#c62828'</span> }}&gt;{serverErrors._general}&lt;/Text&gt;
+        &lt;/View&gt;
+      )}
+
+      <span class="comment">{/* Email field with server error */}</span>
+      &lt;TextInput
+        value={formData.email}
+        onChangeText={email => {
+          setFormData(p => ({ ...p, email }));
+          <span class="comment">// User type करे तो server error clear करो</span>
+          <span class="keyword">if</span> (serverErrors.email) {
+            setServerErrors(p => ({ ...p, email: <span class="keyword">undefined</span> }));
+          }
+        }}
+        style={{
+          borderColor: serverErrors.email ? <span class="string">'#FF3B30'</span> : <span class="string">'#E5E5EA'</span>,
+          borderWidth: <span class="string">1</span>,
+        }}
+      /&gt;
+      {serverErrors.email && (
+        &lt;Text style={{ color: <span class="string">'#FF3B30'</span>, fontSize: 12 }}&gt;
+          ❌ {serverErrors.email}
+        &lt;/Text&gt;
+      )}
+
+      <span class="comment">{/* Password field with server error */}</span>
+      &lt;TextInput
+        value={formData.password}
+        secureTextEntry
+        onChangeText={password => {
+          setFormData(p => ({ ...p, password }));
+          <span class="keyword">if</span> (serverErrors.password) {
+            setServerErrors(p => ({ ...p, password: <span class="keyword">undefined</span> }));
+          }
+        }}
+        style={{
+          borderColor: serverErrors.password ? <span class="string">'#FF3B30'</span> : <span class="string">'#E5E5EA'</span>,
+          borderWidth: <span class="string">1</span>,
+        }}
+      /&gt;
+      {serverErrors.password && (
+        &lt;Text style={{ color: <span class="string">'#FF3B30'</span>, fontSize: 12 }}&gt;
+          ❌ {serverErrors.password}
+        &lt;/Text&gt;
+      )}
+    &lt;/View&gt;
+  );
+};
+                </div>
+
+                <h3>API Response Shape Validation</h3>
+                <p>Normalization defaults fill karta hai — Shape Validation check karta hai ki REQUIRED fields actually exist karte hain. Dono alag kaam hain.</p>
+                <div class="code-block"><span class="comment">// ─── validateResponseShape() ─────────────────────────────</span>
+<span class="keyword">const</span> validateResponseShape = (data, requiredFields = [], context = <span class="string">'API'</span>) => {
+  <span class="keyword">if</span> (!data || <span class="keyword">typeof</span> data !== <span class="string">'object'</span>) {
+    <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">`[\${context}] Response is not an object`</span>);
+  }
+
+  <span class="keyword">const</span> missing = requiredFields.filter(field => {
+    <span class="keyword">const</span> value = field.split(<span class="string">'.'</span>).reduce((obj, key) => obj?.[key], data);
+    <span class="keyword">return</span> value === <span class="keyword">null</span> || value === <span class="keyword">undefined</span>;
+  });
+
+  <span class="keyword">if</span> (missing.length &gt; <span class="string">0</span>) {
+    <span class="keyword">throw</span> <span class="keyword">new</span> Error(
+      <span class="string">`[\${context}] Missing required fields: \${missing.join(', ')}`</span>
+    );
+  }
+
+  <span class="keyword">return</span> <span class="keyword">true</span>;
+};
+
+<span class="comment">// ─── Usage ───────────────────────────────────────────</span>
+<span class="keyword">const</span> loginUser = <span class="keyword">async</span> (credentials) => {
+  <span class="keyword">const</span> raw = <span class="keyword">await</span> apiCall(<span class="string">'/api/login'</span>, {
+    method: <span class="string">'POST'</span>,
+    body: JSON.stringify(credentials),
+  });
+
+  <span class="comment">// Step 1: Shape validate करो — required fields exist करते हैं?</span>
+  validateResponseShape(raw, [<span class="string">'token'</span>, <span class="string">'user.id'</span>, <span class="string">'user.email'</span>], <span class="string">'Login'</span>);
+
+  <span class="comment">// Step 2: Normalize करो — defaults fill करो</span>
+  <span class="keyword">const</span> user = normalizeApiResponse(raw.user);
+
+  <span class="comment">// Step 3: Safely use करो</span>
+  <span class="keyword">await</span> AsyncStorage.setItem(<span class="string">'token'</span>, raw.token);
+  setCurrentUser(user);
+};
+
+<span class="comment">// Nested field validation example:</span>
+validateResponseShape(
+  orderData,
+  [<span class="string">'orderId'</span>, <span class="string">'items'</span>, <span class="string">'payment.status'</span>, <span class="string">'delivery.address'</span>],
+  <span class="string">'CreateOrder'</span>
+);
+                </div>
+            </section>
+
+            <!-- SECTION: STATE MANAGEMENT -->
+            <section id="statemanagement" class="section">
+                <h2><span class="emoji">🗂️</span>State Management Strategy</h2>
+
+                <div class="alert alert-info">
+                    <strong>Rule of Thumb:</strong> Simplest solution jo kaam kare — wahi use karo. Over-engineering mत karo।<br>
+                    <strong>useState → Context → Zustand</strong> — is order mein sochो।
+                </div>
+
+                <h3>📊 Kab Kya Use Karein — Decision Table</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Situation</th><th>Use</th><th>Reason</th></tr></thead>
+                        <tbody>
+                            <tr><td>Ek component ka data (form, toggle, input)</td><td><strong>useState</strong></td><td>Simple, local, fast</td></tr>
+                            <tr><td>2-3 components share karte hain data</td><td><strong>Props drilling</strong></td><td>Still manageable</td></tr>
+                            <tr><td>Poori app mein chahiye (user, theme, lang)</td><td><strong>Context API</strong></td><td>Built-in, no library</td></tr>
+                            <tr><td>Complex state, frequent updates, performance issue</td><td><strong>Zustand</strong></td><td>Minimal boilerplate</td></tr>
+                            <tr><td>Large team, complex business logic, time-travel debug</td><td><strong>Redux Toolkit</strong></td><td>Last resort only</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>1️⃣ useState — Local State (Default Choice)</h3>
+                <div class="code-block"><span class="comment">// ✅ Ye sab useState ke liye perfect hai:</span>
+<span class="keyword">const</span> LoginForm = () => {
+  <span class="keyword">const</span> [email, setEmail]         = useState(<span class="string">''</span>);
+  <span class="keyword">const</span> [password, setPassword]   = useState(<span class="string">''</span>);
+  <span class="keyword">const</span> [isLoading, setIsLoading] = useState(<span class="keyword">false</span>);
+  <span class="keyword">const</span> [error, setError]         = useState(<span class="keyword">null</span>);
+
+  <span class="comment">// Related state ek object mein group karo</span>
+  <span class="keyword">const</span> [formState, setFormState] = useState({
+    isSubmitting: <span class="keyword">false</span>,
+    isSuccess: <span class="keyword">false</span>,
+    errorMsg: <span class="keyword">null</span>,
+  });
+
+  <span class="comment">// Safe update — previous state preserve karo</span>
+  <span class="keyword">const</span> updateForm = (updates) =>
+    setFormState(prev => ({ ...prev, ...updates }));
+};
+                </div>
+
+                <h3>2️⃣ Context API — Global App State</h3>
+                <div class="code-block"><span class="comment">// ─── AuthContext.js ───────────────────────────────────</span>
+<span class="keyword">import</span> React, { createContext, useContext, useState } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="keyword">const</span> AuthContext = createContext(<span class="keyword">null</span>);
+
+<span class="keyword">export const</span> AuthProvider = ({ children }) => {
+  <span class="keyword">const</span> [user, setUser]       = useState(<span class="keyword">null</span>);
+  <span class="keyword">const</span> [token, setToken]     = useState(<span class="keyword">null</span>);
+  <span class="keyword">const</span> [isReady, setIsReady] = useState(<span class="keyword">false</span>); <span class="comment">// App init check</span>
+
+  <span class="keyword">const</span> login = (userData, authToken) => {
+    setUser(userData);
+    setToken(authToken);
+  };
+
+  <span class="keyword">const</span> logout = () => {
+    setUser(<span class="keyword">null</span>);
+    setToken(<span class="keyword">null</span>);
+  };
+
+  <span class="keyword">return</span> (
+    &lt;AuthContext.Provider value={{ user, token, isReady, setIsReady, login, logout }}&gt;
+      {children}
+    &lt;/AuthContext.Provider&gt;
+  );
+};
+
+<span class="comment">// Custom hook — direct context use mत karo</span>
+<span class="keyword">export const</span> useAuth = () => {
+  <span class="keyword">const</span> ctx = useContext(AuthContext);
+  <span class="keyword">if</span> (!ctx) <span class="keyword">throw new</span> Error(<span class="string">'useAuth must be inside AuthProvider'</span>);
+  <span class="keyword">return</span> ctx;
+};
+
+<span class="comment">// ─── App.js ──────────────────────────────────────────</span>
+<span class="keyword">const</span> App = () => (
+  &lt;AuthProvider&gt;
+    &lt;NavigationContainer&gt;
+      &lt;RootNavigator /&gt;
+    &lt;/NavigationContainer&gt;
+  &lt;/AuthProvider&gt;
+);
+
+<span class="comment">// ─── Any Screen ──────────────────────────────────────</span>
+<span class="keyword">const</span> ProfileScreen = () => {
+  <span class="keyword">const</span> { user, logout } = useAuth();
+  <span class="keyword">return</span> &lt;Text&gt;{user?.name ?? <span class="string">'Guest'</span>}&lt;/Text&gt;;
+};
+                </div>
+
+                <h3>3️⃣ Zustand — Jab Context Kaafi Na Ho</h3>
+                <div class="code-block"><span class="comment">// npm install zustand</span>
+
+<span class="comment">// ─── store/cartStore.js ───────────────────────────────</span>
+<span class="keyword">import</span> { create } <span class="keyword">from</span> <span class="string">'zustand'</span>;
+
+<span class="keyword">const</span> useCartStore = create((set, get) => ({
+  <span class="comment">// State</span>
+  items: [],
+  totalCount: <span class="string">0</span>,
+  totalPrice: <span class="string">0</span>,
+
+  <span class="comment">// Actions</span>
+  addItem: (product) => {
+    <span class="keyword">const</span> exists = get().items.find(i => i.id === product?.id);
+    <span class="keyword">if</span> (exists) {
+      set(state => ({
+        items: state.items.map(i =>
+          i.id === product.id ? { ...i, qty: i.qty + <span class="string">1</span> } : i
+        ),
+      }));
+    } <span class="keyword">else</span> {
+      set(state => ({ items: [...state.items, { ...product, qty: <span class="string">1</span> }] }));
+    }
+    get().recalculate();
+  },
+
+  removeItem: (id) => {
+    set(state => ({ items: state.items.filter(i => i.id !== id) }));
+    get().recalculate();
+  },
+
+  clearCart: () => set({ items: [], totalCount: <span class="string">0</span>, totalPrice: <span class="string">0</span> }),
+
+  recalculate: () => {
+    <span class="keyword">const</span> { items } = get();
+    set({
+      totalCount: items.reduce((sum, i) => sum + (i.qty ?? <span class="string">0</span>), <span class="string">0</span>),
+      totalPrice: items.reduce((sum, i) => sum + ((i.price ?? <span class="string">0</span>) * (i.qty ?? <span class="string">0</span>)), <span class="string">0</span>),
+    });
+  },
+}));
+
+<span class="comment">// ─── Usage in any component ───────────────────────────</span>
+<span class="keyword">const</span> CartIcon = () => {
+  <span class="keyword">const</span> totalCount = useCartStore(state => state.totalCount);
+  <span class="keyword">return</span> &lt;Text&gt;🛒 {totalCount}&lt;/Text&gt;;
+};
+
+<span class="keyword">const</span> ProductCard = ({ product }) => {
+  <span class="keyword">const</span> addItem = useCartStore(state => state.addItem);
+  <span class="keyword">return</span> &lt;Button onPress={() => addItem(product)} title=<span class="string">"Add to Cart"</span> /&gt;;
+};
+                </div>
+
+                <h3>⚠️ Context Re-render Problem — Aur Fix</h3>
+                <div class="code-block"><span class="comment">// ❌ Problem: Context value change → SARE children re-render</span>
+<span class="keyword">const</span> AppContext = createContext(<span class="keyword">null</span>);
+<span class="keyword">const</span> AppProvider = ({ children }) => {
+  <span class="keyword">const</span> [user, setUser] = useState(<span class="keyword">null</span>);
+  <span class="keyword">const</span> [theme, setTheme] = useState(<span class="string">'light'</span>);
+  <span class="comment">// user change → theme wale components bhi re-render! ❌</span>
+  <span class="keyword">return</span> &lt;AppContext.Provider value={{ user, theme, setUser, setTheme }}&gt;...&lt;/AppContext.Provider&gt;;
+};
+
+<span class="comment">// ✅ Fix: Alag-alag Context banao</span>
+<span class="keyword">const</span> UserContext  = createContext(<span class="keyword">null</span>); <span class="comment">// Sirf user data</span>
+<span class="keyword">const</span> ThemeContext = createContext(<span class="keyword">null</span>); <span class="comment">// Sirf theme</span>
+
+<span class="comment">// Ab user change → sirf user consumers re-render honge ✅</span>
+                </div>
+
+                <div class="alert alert-success">
+                    <strong>✅ Practical Rule:</strong><br>
+                    Naya project → <strong>useState + Context API</strong> se shuru karo. Jab performance issues dikhne lagein ya state complex ho jaye — tabhi Zustand add karo। Pehle se Redux mat daalo।
+                </div>
+            </section>
+
+            <!-- SECTION: AUTH FLOW -->
+            <section id="authflow" class="section">
+                <h2><span class="emoji">🔐</span>Complete Auth Flow</h2>
+
+                <div class="alert alert-info">
+                    <strong>Teen critical moments:</strong><br>
+                    1. <strong>App Open</strong> → Token check → Sahi screen pe bhejo<br>
+                    2. <strong>Login</strong> → Token save → State update → Navigate<br>
+                    3. <strong>Logout</strong> → Sab kuch clean karo → Login screen
+                </div>
+
+                <h3>1️⃣ App Open — Token Check (Splash Logic)</h3>
+                <div class="code-block"><span class="comment">// ─── RootNavigator.js ────────────────────────────────</span>
+<span class="keyword">import</span> * <span class="keyword">as</span> SecureStore <span class="keyword">from</span> <span class="string">'expo-secure-store'</span>;
+
+<span class="keyword">const</span> RootNavigator = () => {
+  <span class="keyword">const</span> { user, token, isReady, setIsReady, login } = useAuth();
+
+  useEffect(() => {
+    <span class="keyword">const</span> checkAuth = <span class="keyword">async</span> () => {
+      <span class="keyword">try</span> {
+        <span class="keyword">const</span> savedToken = <span class="keyword">await</span> SecureStore.getItemAsync(<span class="string">'token'</span>);
+
+        <span class="keyword">if</span> (!savedToken) {
+          <span class="comment">// Token nahi → Login screen</span>
+          setIsReady(<span class="keyword">true</span>);
+          <span class="keyword">return</span>;
+        }
+
+        <span class="comment">// Token hai → Verify karo (optional but recommended)</span>
+        <span class="keyword">const</span> response = <span class="keyword">await</span> fetch(<span class="string">'/api/auth/me'</span>, {
+          headers: { Authorization: <span class="string">`Bearer \${savedToken}`</span> },
+        });
+
+        <span class="keyword">if</span> (response.ok) {
+          <span class="keyword">const</span> userData = <span class="keyword">await</span> response.json();
+          login(userData, savedToken);   <span class="comment">// Context update</span>
+        } <span class="keyword">else</span> {
+          <span class="comment">// Token invalid/expired → Clear karo</span>
+          <span class="keyword">await</span> SecureStore.deleteItemAsync(<span class="string">'token'</span>);
+        }
+
+      } <span class="keyword">catch</span> {
+        <span class="comment">// Network error → Token hai to bhi offline mode</span>
+        <span class="comment">// App kaam karta rahe (offline support)</span>
+      } <span class="keyword">finally</span> {
+        setIsReady(<span class="keyword">true</span>);   <span class="comment">// Hamesha ready set karo</span>
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  <span class="comment">// Jab tak check ho raha hai — Splash screen</span>
+  <span class="keyword">if</span> (!isReady) <span class="keyword">return</span> &lt;SplashScreen /&gt;;
+
+  <span class="comment">// Token/User ke basis pe navigator decide karo</span>
+  <span class="keyword">return</span> token ? &lt;AppNavigator /&gt; : &lt;AuthNavigator /&gt;;
+};
+                </div>
+
+                <h3>2️⃣ Login Flow — Complete</h3>
+                <div class="code-block"><span class="keyword">const</span> LoginScreen = ({ navigation }) => {
+  <span class="keyword">const</span> { login } = useAuth();
+  <span class="keyword">const</span> [formState, setFormState] = useState({
+    email: <span class="string">''</span>, password: <span class="string">''</span>,
+    isLoading: <span class="keyword">false</span>, error: <span class="keyword">null</span>,
+  });
+
+  <span class="keyword">const</span> handleLogin = <span class="keyword">async</span> () => {
+    <span class="comment">// 1. Client-side validation</span>
+    <span class="keyword">if</span> (!formState.email.trim() || !formState.password) {
+      setFormState(p => ({ ...p, error: <span class="string">'Email and password required'</span> }));
+      <span class="keyword">return</span>;
+    }
+
+    setFormState(p => ({ ...p, isLoading: <span class="keyword">true</span>, error: <span class="keyword">null</span> }));
+
+    <span class="keyword">try</span> {
+      <span class="comment">// 2. API call</span>
+      <span class="keyword">const</span> response = <span class="keyword">await</span> fetch(<span class="string">'/api/auth/login'</span>, {
+        method: <span class="string">'POST'</span>,
+        headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
+        body: JSON.stringify({
+          email: formState.email.trim().toLowerCase(),
+          password: formState.password,
+        }),
+      });
+
+      <span class="keyword">const</span> body = <span class="keyword">await</span> response.json();
+
+      <span class="keyword">if</span> (!response.ok) {
+        <span class="keyword">throw new</span> Error(body?.message ?? <span class="string">'Login failed'</span>);
+      }
+
+      <span class="comment">// 3. Validate required fields in response</span>
+      <span class="keyword">if</span> (!body.token || !body.user?.id) {
+        <span class="keyword">throw new</span> Error(<span class="string">'Invalid server response'</span>);
+      }
+
+      <span class="comment">// 4. Save token securely</span>
+      <span class="keyword">await</span> SecureStore.setItemAsync(<span class="string">'token'</span>, body.token);
+      <span class="keyword">if</span> (body.refreshToken) {
+        <span class="keyword">await</span> SecureStore.setItemAsync(<span class="string">'refreshToken'</span>, body.refreshToken);
+      }
+
+      <span class="comment">// 5. Update global state</span>
+      login(body.user, body.token);
+
+      <span class="comment">// Navigation happens automatically via RootNavigator</span>
+      <span class="comment">// (token set hoga → AppNavigator render hoga)</span>
+
+    } <span class="keyword">catch</span> (err) {
+      setFormState(p => ({
+        ...p,
+        error: err.message ?? <span class="string">'Something went wrong'</span>,
+        isLoading: <span class="keyword">false</span>,
+      }));
+    }
+  };
+};
+                </div>
+
+                <h3>3️⃣ Logout Flow — Complete Cleanup</h3>
+                <div class="code-block"><span class="comment">// ─── useLogout.js hook ────────────────────────────────</span>
+<span class="keyword">const</span> useLogout = () => {
+  <span class="keyword">const</span> { logout } = useAuth();
+  <span class="keyword">const</span> cartStore  = useCartStore();   <span class="comment">// Zustand</span>
+
+  <span class="keyword">const</span> handleLogout = <span class="keyword">async</span> () => {
+    <span class="keyword">try</span> {
+      <span class="comment">// 1. Optional: Server ko batao (invalidate token)</span>
+      <span class="keyword">const</span> token = <span class="keyword">await</span> SecureStore.getItemAsync(<span class="string">'token'</span>);
+      <span class="keyword">if</span> (token) {
+        fetch(<span class="string">'/api/auth/logout'</span>, {
+          method: <span class="string">'POST'</span>,
+          headers: { Authorization: <span class="string">`Bearer \${token}`</span> },
+        }).catch(() => {}); <span class="comment">// Fire and forget — logout UI block mत karo</span>
+      }
+
+      <span class="comment">// 2. SecureStore clear karo</span>
+      <span class="keyword">await</span> SecureStore.deleteItemAsync(<span class="string">'token'</span>);
+      <span class="keyword">await</span> SecureStore.deleteItemAsync(<span class="string">'refreshToken'</span>);
+
+      <span class="comment">// 3. All global state reset karo</span>
+      logout();           <span class="comment">// Auth context clear</span>
+      cartStore.clearCart();  <span class="comment">// Cart clear</span>
+
+      <span class="comment">// 4. Navigation — RootNavigator automatically AuthNavigator dikhayega</span>
+      <span class="comment">// Manually navigate karne ki zaroorat nahi</span>
+
+    } <span class="keyword">catch</span> (err) {
+      console.error(<span class="string">'Logout error'</span>, err);
+      <span class="comment">// Error aaye tab bhi local state clear karo</span>
+      logout();
+    }
+  };
+
+  <span class="keyword">return</span> { handleLogout };
+};
+
+<span class="comment">// Usage:</span>
+<span class="keyword">const</span> { handleLogout } = useLogout();
+&lt;Button onPress={handleLogout} title=<span class="string">"Logout"</span> /&gt;
+                </div>
+
+                <h3>4️⃣ Protected Routes Pattern</h3>
+                <div class="code-block"><span class="comment">// ─── Sirf authenticated user access kar sake ─────────</span>
+<span class="keyword">const</span> AppNavigator = () => (
+  &lt;Stack.Navigator&gt;
+    &lt;Stack.Screen name=<span class="string">"Home"</span>     component={HomeScreen} /&gt;
+    &lt;Stack.Screen name=<span class="string">"Profile"</span>  component={ProfileScreen} /&gt;
+    &lt;Stack.Screen name=<span class="string">"Settings"</span> component={SettingsScreen} /&gt;
+  &lt;/Stack.Navigator&gt;
+);
+
+<span class="keyword">const</span> AuthNavigator = () => (
+  &lt;Stack.Navigator screenOptions={{ headerShown: <span class="keyword">false</span> }}&gt;
+    &lt;Stack.Screen name=<span class="string">"Login"</span>    component={LoginScreen} /&gt;
+    &lt;Stack.Screen name=<span class="string">"Register"</span> component={RegisterScreen} /&gt;
+    &lt;Stack.Screen name=<span class="string">"ForgotPw"</span> component={ForgotPasswordScreen} /&gt;
+  &lt;/Stack.Navigator&gt;
+);
+
+<span class="comment">// RootNavigator decides which stack to show:</span>
+<span class="keyword">return</span> token ? &lt;AppNavigator /&gt; : &lt;AuthNavigator /&gt;;
+<span class="comment">// Simple, secure, no manual redirect needed ✅</span>
+                </div>
+            </section>
+
+            <!-- SECTION: STORAGE -->
+            <section id="storage" class="section">
+                <h2><span class="emoji">💾</span>AsyncStorage & SecureStore</h2>
+
+                <div class="alert alert-danger">
+                    <strong>🔴 Critical Rule:</strong> Tokens, passwords, sensitive data → hamesha <strong>SecureStore</strong> mein। AsyncStorage encrypted nahi hoti — usmein sirf non-sensitive data rakho।
+                </div>
+
+                <h3>📊 Kya Kahan Store Karein</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Data</th><th>Store</th><th>Reason</th></tr></thead>
+                        <tbody>
+                            <tr style="background:#ffebee"><td>Auth token, Refresh token</td><td><strong>SecureStore</strong></td><td>Sensitive — encrypted</td></tr>
+                            <tr style="background:#ffebee"><td>Password, PIN, biometric key</td><td><strong>SecureStore</strong></td><td>Never in AsyncStorage</td></tr>
+                            <tr style="background:#f1f8e9"><td>User preferences (theme, lang)</td><td><strong>AsyncStorage</strong></td><td>Non-sensitive</td></tr>
+                            <tr style="background:#f1f8e9"><td>Onboarding seen flag</td><td><strong>AsyncStorage</strong></td><td>Non-sensitive</td></tr>
+                            <tr style="background:#f1f8e9"><td>Cache data (products list)</td><td><strong>AsyncStorage</strong></td><td>Non-sensitive</td></tr>
+                            <tr style="background:#fff3e0"><td>Large data, complex queries</td><td><strong>SQLite / MMKV</strong></td><td>AsyncStorage slow for large data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>1️⃣ SecureStore — Tokens ke liye</h3>
+                <div class="code-block"><span class="comment">// npm install expo-secure-store</span>
+<span class="keyword">import</span> * <span class="keyword">as</span> SecureStore <span class="keyword">from</span> <span class="string">'expo-secure-store'</span>;
+
+<span class="comment">// ─── Storage Service — centralized ────────────────────</span>
+<span class="keyword">const</span> TokenStorage = {
+
+  save: <span class="keyword">async</span> (key, value) => {
+    <span class="keyword">try</span> {
+      <span class="keyword">await</span> SecureStore.setItemAsync(key, String(value));
+      <span class="keyword">return true</span>;
+    } <span class="keyword">catch</span> (err) {
+      console.error(<span class="string">`[SecureStore] save failed for \${key}`</span>, err);
+      <span class="keyword">return false</span>;
+    }
+  },
+
+  get: <span class="keyword">async</span> (key, fallback = <span class="keyword">null</span>) => {
+    <span class="keyword">try</span> {
+      <span class="keyword">const</span> val = <span class="keyword">await</span> SecureStore.getItemAsync(key);
+      <span class="keyword">return</span> val ?? fallback;
+    } <span class="keyword">catch</span> (err) {
+      console.error(<span class="string">`[SecureStore] get failed for \${key}`</span>, err);
+      <span class="keyword">return</span> fallback;
+    }
+  },
+
+  delete: <span class="keyword">async</span> (key) => {
+    <span class="keyword">try</span> {
+      <span class="keyword">await</span> SecureStore.deleteItemAsync(key);
+      <span class="keyword">return true</span>;
+    } <span class="keyword">catch</span> (err) {
+      console.error(<span class="string">`[SecureStore] delete failed for \${key}`</span>, err);
+      <span class="keyword">return false</span>;
+    }
+  },
+
+  clearAll: <span class="keyword">async</span> () => {
+    <span class="keyword">const</span> keys = [<span class="string">'token'</span>, <span class="string">'refreshToken'</span>, <span class="string">'userId'</span>];
+    <span class="keyword">await</span> Promise.all(keys.map(k => SecureStore.deleteItemAsync(k).catch(() => {})));
+  },
+};
+
+<span class="comment">// ─── Usage ────────────────────────────────────────────</span>
+<span class="keyword">await</span> TokenStorage.save(<span class="string">'token'</span>, authToken);
+<span class="keyword">const</span> token = <span class="keyword">await</span> TokenStorage.get(<span class="string">'token'</span>);
+<span class="keyword">await</span> TokenStorage.clearAll();   <span class="comment">// Logout pe</span>
+                </div>
+
+                <h3>2️⃣ AsyncStorage — Preferences ke liye</h3>
+                <div class="code-block"><span class="comment">// npm install @react-native-async-storage/async-storage</span>
+<span class="keyword">import</span> AsyncStorage <span class="keyword">from</span> <span class="string">'@react-native-async-storage/async-storage'</span>;
+
+<span class="comment">// ─── AsyncStorage Service ─────────────────────────────</span>
+<span class="keyword">const</span> AppStorage = {
+
+  <span class="comment">// Object save karna</span>
+  saveObject: <span class="keyword">async</span> (key, value) => {
+    <span class="keyword">try</span> {
+      <span class="keyword">await</span> AsyncStorage.setItem(key, JSON.stringify(value));
+      <span class="keyword">return true</span>;
+    } <span class="keyword">catch</span> (err) {
+      console.error(<span class="string">`[AsyncStorage] saveObject failed: \${key}`</span>, err);
+      <span class="keyword">return false</span>;
+    }
+  },
+
+  <span class="comment">// Object padhna</span>
+  getObject: <span class="keyword">async</span> (key, fallback = <span class="keyword">null</span>) => {
+    <span class="keyword">try</span> {
+      <span class="keyword">const</span> raw = <span class="keyword">await</span> AsyncStorage.getItem(key);
+      <span class="keyword">if</span> (!raw) <span class="keyword">return</span> fallback;
+      <span class="keyword">return</span> JSON.parse(raw);
+    } <span class="keyword">catch</span> (err) {
+      console.error(<span class="string">`[AsyncStorage] getObject failed: \${key}`</span>, err);
+      <span class="keyword">return</span> fallback;
+    }
+  },
+
+  <span class="comment">// Boolean flag</span>
+  getFlag: <span class="keyword">async</span> (key) => {
+    <span class="keyword">const</span> val = <span class="keyword">await</span> AsyncStorage.getItem(key).catch(() => <span class="keyword">null</span>);
+    <span class="keyword">return</span> val === <span class="string">'true'</span>;
+  },
+
+  setFlag: <span class="keyword">async</span> (key, val = <span class="keyword">true</span>) => {
+    <span class="keyword">await</span> AsyncStorage.setItem(key, String(val)).catch(() => {});
+  },
+
+  remove: <span class="keyword">async</span> (key) => {
+    <span class="keyword">await</span> AsyncStorage.removeItem(key).catch(() => {});
+  },
+};
+
+<span class="comment">// ─── Common Usage Examples ────────────────────────────</span>
+
+<span class="comment">// Theme save/load</span>
+<span class="keyword">await</span> AppStorage.setFlag(<span class="string">'isDarkMode'</span>, <span class="keyword">true</span>);
+<span class="keyword">const</span> isDark = <span class="keyword">await</span> AppStorage.getFlag(<span class="string">'isDarkMode'</span>);
+
+<span class="comment">// Onboarding seen</span>
+<span class="keyword">await</span> AppStorage.setFlag(<span class="string">'onboardingSeen'</span>);
+<span class="keyword">const</span> seen = <span class="keyword">await</span> AppStorage.getFlag(<span class="string">'onboardingSeen'</span>);
+
+<span class="comment">// User preferences object</span>
+<span class="keyword">await</span> AppStorage.saveObject(<span class="string">'userPrefs'</span>, { lang: <span class="string">'hi'</span>, notifications: <span class="keyword">true</span> });
+<span class="keyword">const</span> prefs = <span class="keyword">await</span> AppStorage.getObject(<span class="string">'userPrefs'</span>, { lang: <span class="string">'en'</span> });
+
+<span class="comment">// API response cache (simple)</span>
+<span class="keyword">const</span> cacheKey = <span class="string">`cache_products_page_1`</span>;
+<span class="keyword">await</span> AppStorage.saveObject(cacheKey, { data: products, cachedAt: Date.now() });
+<span class="keyword">const</span> cached = <span class="keyword">await</span> AppStorage.getObject(cacheKey);
+<span class="keyword">const</span> isStale = !cached || (Date.now() - cached.cachedAt) &gt; <span class="string">5</span> * <span class="string">60</span> * <span class="string">1000</span>; <span class="comment">// 5 min</span>
+                </div>
+
+                <h3>3️⃣ Storage Keys — Centralize Karo</h3>
+                <div class="code-block"><span class="comment">// ─── constants/storageKeys.js ─────────────────────────</span>
+<span class="comment">// Magic strings mat likhо har jagah — ek jagah define karo</span>
+
+<span class="keyword">export const</span> SECURE_KEYS = {
+  TOKEN:         <span class="string">'auth_token'</span>,
+  REFRESH_TOKEN: <span class="string">'auth_refresh_token'</span>,
+  USER_ID:       <span class="string">'auth_user_id'</span>,
+};
+
+<span class="keyword">export const</span> STORAGE_KEYS = {
+  USER_PREFS:       <span class="string">'user_preferences'</span>,
+  ONBOARDING_SEEN:  <span class="string">'onboarding_seen'</span>,
+  DARK_MODE:        <span class="string">'is_dark_mode'</span>,
+  LANGUAGE:         <span class="string">'app_language'</span>,
+  CACHE_PREFIX:     <span class="string">'cache_'</span>,   <span class="comment">// cache_products, cache_categories etc.</span>
+};
+
+<span class="comment">// Usage:</span>
+<span class="keyword">await</span> TokenStorage.save(SECURE_KEYS.TOKEN, token);
+<span class="keyword">await</span> AppStorage.setFlag(STORAGE_KEYS.DARK_MODE, <span class="keyword">true</span>);
+                </div>
+            </section>
+
+            <!-- SECTION: OFFLINE HANDLING -->
+            <section id="offline" class="section">
+                <h2><span class="emoji">📶</span>Offline & Network Detection</h2>
+
+                <div class="alert alert-warning">
+                    <strong>Real-world problem:</strong> User underground jaye, internet chala jaye — app crash nahi honi chahiye। Proper offline handling = professional app।
+                </div>
+
+                <h3>1️⃣ Network Status Hook</h3>
+                <div class="code-block"><span class="comment">// npm install @react-native-community/netinfo</span>
+<span class="keyword">import</span> NetInfo <span class="keyword">from</span> <span class="string">'@react-native-community/netinfo'</span>;
+<span class="keyword">import</span> { useState, useEffect } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="comment">// ─── useNetworkStatus Hook ────────────────────────────</span>
+<span class="keyword">const</span> useNetworkStatus = () => {
+  <span class="keyword">const</span> [netState, setNetState] = useState({
+    isConnected:    <span class="keyword">true</span>,  <span class="comment">// Connected hai?</span>
+    isInternetReachable: <span class="keyword">true</span>,  <span class="comment">// Actually internet hai? (wifi without internet)</span>
+    connectionType: <span class="string">'unknown'</span>,   <span class="comment">// wifi / cellular / none</span>
+  });
+
+  useEffect(() => {
+    <span class="comment">// Current status check</span>
+    NetInfo.fetch().then(state => {
+      setNetState({
+        isConnected:         state.isConnected ?? <span class="keyword">true</span>,
+        isInternetReachable: state.isInternetReachable ?? <span class="keyword">true</span>,
+        connectionType:      state.type ?? <span class="string">'unknown'</span>,
+      });
+    });
+
+    <span class="comment">// Changes listen karo</span>
+    <span class="keyword">const</span> unsubscribe = NetInfo.addEventListener(state => {
+      setNetState({
+        isConnected:         state.isConnected ?? <span class="keyword">true</span>,
+        isInternetReachable: state.isInternetReachable ?? <span class="keyword">true</span>,
+        connectionType:      state.type ?? <span class="string">'unknown'</span>,
+      });
+    });
+
+    <span class="keyword">return</span> unsubscribe;  <span class="comment">// Cleanup</span>
+  }, []);
+
+  <span class="keyword">return</span> {
+    ...netState,
+    isOffline: !netState.isConnected || netState.isInternetReachable === <span class="keyword">false</span>,
+  };
+};
+                </div>
+
+                <h3>2️⃣ Offline Banner — Global</h3>
+                <div class="code-block"><span class="comment">// ─── OfflineBanner.js ─────────────────────────────────</span>
+<span class="keyword">import</span> { Animated } <span class="keyword">from</span> <span class="string">'react-native'</span>;
+
+<span class="keyword">const</span> OfflineBanner = () => {
+  <span class="keyword">const</span> { isOffline } = useNetworkStatus();
+  <span class="keyword">const</span> slideAnim = useRef(<span class="keyword">new</span> Animated.Value(-<span class="string">60</span>)).current;
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: isOffline ? <span class="string">0</span> : -<span class="string">60</span>,
+      duration: <span class="string">300</span>,
+      useNativeDriver: <span class="keyword">true</span>,
+    }).start();
+  }, [isOffline]);
+
+  <span class="keyword">return</span> (
+    &lt;Animated.View style={{
+      transform: [{ translateY: slideAnim }],
+      backgroundColor: <span class="string">'#FF3B30'</span>,
+      padding: <span class="string">12</span>,
+      alignItems: <span class="string">'center'</span>,
+      position: <span class="string">'absolute'</span>,
+      top: <span class="string">0</span>, left: <span class="string">0</span>, right: <span class="string">0</span>,
+      zIndex: <span class="string">999</span>,
+    }}&gt;
+      &lt;Text style={{ color: <span class="string">'white'</span>, fontWeight: <span class="string">'600'</span> }}&gt;
+        📵 No internet connection
+      &lt;/Text&gt;
+    &lt;/Animated.View&gt;
+  );
+};
+
+<span class="comment">// ─── App.js mein add karo ─────────────────────────────</span>
+<span class="keyword">const</span> App = () => (
+  &lt;AuthProvider&gt;
+    &lt;NavigationContainer&gt;
+      &lt;OfflineBanner /&gt;     <span class="comment">{/* Global — har screen pe dikhega */}</span>
+      &lt;RootNavigator /&gt;
+    &lt;/NavigationContainer&gt;
+  &lt;/AuthProvider&gt;
+);
+                </div>
+
+                <h3>3️⃣ API Call mein Offline Check</h3>
+                <div class="code-block"><span class="comment">// API call se pehle connection check karo</span>
+<span class="keyword">const</span> safeFetch = <span class="keyword">async</span> (url, options = {}) => {
+  <span class="comment">// Step 1: Network check</span>
+  <span class="keyword">const</span> netState = <span class="keyword">await</span> NetInfo.fetch();
+  <span class="keyword">const</span> isOffline = !netState.isConnected || !netState.isInternetReachable;
+
+  <span class="keyword">if</span> (isOffline) {
+    <span class="keyword">throw</span> {
+      type: <span class="string">'OFFLINE'</span>,
+      message: <span class="string">'No internet connection. Please check your network.'</span>,
+    };
+  }
+
+  <span class="comment">// Step 2: Normal fetch</span>
+  <span class="keyword">return</span> fetch(url, options);
+};
+
+<span class="comment">// Error handler mein OFFLINE type handle karo:</span>
+<span class="keyword">switch</span> (err.type) {
+  <span class="keyword">case</span> <span class="string">'OFFLINE'</span>:
+    setError(<span class="string">'📵 You are offline. Check connection and try again.'</span>);
+    <span class="keyword">break</span>;
+  <span class="comment">// ... other cases</span>
+}
+                </div>
+
+                <h3>4️⃣ Cache + Offline = Seamless UX</h3>
+                <div class="code-block"><span class="comment">// ─── Stale-While-Revalidate Pattern ───────────────────</span>
+<span class="comment">// 1. Cache se pehle dikhao → 2. Background mein refresh karo</span>
+
+<span class="keyword">const</span> useCachedData = (url, cacheKey, ttlMinutes = <span class="string">5</span>) => {
+  <span class="keyword">const</span> [data, setData]       = useState(<span class="keyword">null</span>);
+  <span class="keyword">const</span> [isStale, setIsStale] = useState(<span class="keyword">false</span>);
+  <span class="keyword">const</span> [error, setError]     = useState(<span class="keyword">null</span>);
+  <span class="keyword">const</span> { isOffline }         = useNetworkStatus();
+
+  useEffect(() => {
+    <span class="keyword">let</span> isMounted = <span class="keyword">true</span>;
+
+    <span class="keyword">const</span> load = <span class="keyword">async</span> () => {
+      <span class="comment">// Step 1: Cache se load karo (instant)</span>
+      <span class="keyword">const</span> cached = <span class="keyword">await</span> AppStorage.getObject(cacheKey);
+      <span class="keyword">if</span> (cached?.data && isMounted) {
+        setData(cached.data);
+        <span class="keyword">const</span> ageMs = Date.now() - (cached.cachedAt ?? <span class="string">0</span>);
+        setIsStale(ageMs &gt; ttlMinutes * <span class="string">60</span> * <span class="string">1000</span>);
+      }
+
+      <span class="comment">// Step 2: Offline hai → bas cache dikhao</span>
+      <span class="keyword">if</span> (isOffline) <span class="keyword">return</span>;
+
+      <span class="comment">// Step 3: Network se fresh data lo</span>
+      <span class="keyword">try</span> {
+        <span class="keyword">const</span> res  = <span class="keyword">await</span> fetch(url);
+        <span class="keyword">const</span> fresh = <span class="keyword">await</span> res.json();
+
+        <span class="keyword">if</span> (isMounted) {
+          setData(fresh);
+          setIsStale(<span class="keyword">false</span>);
+          <span class="comment">// Cache update karo</span>
+          <span class="keyword">await</span> AppStorage.saveObject(cacheKey, { data: fresh, cachedAt: Date.now() });
+        }
+      } <span class="keyword">catch</span> (err) {
+        <span class="comment">// Network fail — cache already dikhaya hua hai, error show karo</span>
+        <span class="keyword">if</span> (isMounted && !cached?.data) setError(err.message);
+      }
+    };
+
+    load();
+    <span class="keyword">return</span> () => { isMounted = <span class="keyword">false</span>; };
+  }, [url, isOffline]);
+
+  <span class="keyword">return</span> { data, isStale, error, isOffline };
+};
+
+<span class="comment">// Usage:</span>
+<span class="keyword">const</span> { data, isStale, isOffline } = useCachedData(<span class="string">'/api/products'</span>, <span class="string">'cache_products'</span>);
+{isOffline && &lt;Text style={{ color: <span class="string">'orange'</span> }}&gt;📵 Showing cached data&lt;/Text&gt;}
+{isStale  && &lt;Text style={{ color: <span class="string">'gray'</span>   }}&gt;🔄 Refreshing...&lt;/Text&gt;}
+                </div>
+
+                <h3>📋 Offline UX Checklist</h3>
+                <ul class="checklist">
+                    <li>NetInfo install hai aur hook ready hai</li>
+                    <li>Global OfflineBanner App.js mein add hai</li>
+                    <li>API calls offline check karte hain pehle</li>
+                    <li>OFFLINE error type alag handle hota hai</li>
+                    <li>Critical screens cached data dikhate hain offline mein</li>
+                    <li>Cache stale hone ka indicator hai (🔄)</li>
+                </ul>
+            </section>
+
+            <!-- SECTION: CODE REVIEW WORKFLOW -->
+            <section id="codereview" class="section">
+                <h2><span class="emoji">🔍</span>Code Review with AI - Complete Workflow</h2>
+
+                <h3>🎯 Complete Step-by-Step Process</h3>
+
+                <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h4>STEP 1: अपना Code तैयार करो</h4>
+                    <p>आपका component/form जो लिखा है, उसे complete file के साथ रखो:</p>
+                    <div class="code-block"><span class="comment">// MyLoginForm.js या MyComponent.js</span>
+<span class="keyword">import</span> React, { useState, useEffect } <span class="keyword">from</span> <span class="string">'react'</span>;
+<span class="keyword">import</span> { View, Text, TextInput } <span class="keyword">from</span> <span class="string">'react-native'</span>;
+
+<span class="keyword">const</span> MyComponent = () => {
+  <span class="comment">// ... आपका complete code</span>
+};
+
+<span class="keyword">export default</span> MyComponent;
+                    </div>
+                </div>
+
+                <div style="background: #fff8f0; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h4>STEP 2: AI को यह Message भेजो</h4>
+                    <p>नीचे दिए गए template को use करो:</p>
+                    <div class="code-block"><span class="string">"I'm building a React Native login form. Please review my code using this comprehensive guide (paste this entire HTML document).
+
+Here's my current code:
+
+[paste your code here]
+
+Please tell me:
+1. ✅ What's good in my code?
+2. ❌ What safety guards are missing?
+3. 🔧 What improvements can I make?
+4. 📋 Create a detailed checklist of what to fix
+5. 📝 For each issue, explain HOW to implement the fix"</span>
+                    </div>
+                </div>
+
+                <div style="background: #f0fff0; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h4>STEP 3: AI की Suggestions सुनो</h4>
+                    <p>AI बताएगा:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Safety Issues:</strong> कौन से null checks missing हैं</li>
+                        <li><strong>Error Handling:</strong> कौन से errors handle नहीं हो रहे</li>
+                        <li><strong>UI/UX:</strong> किस loading/error state को add करना चाहिए</li>
+                        <li><strong>Validation:</strong> किस validation को improve करना चाहिए</li>
+                        <li><strong>Code Quality:</strong> किस refactoring की जरूरत है</li>
+                    </ul>
+                </div>
+
+                <div style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h4>STEP 4: Implementation करो</h4>
+                    <p>AI की suggestions के साथ:</p>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>पहले समझो:</strong> "AI, इस fix को मैं कहाँ करूँ? क्या यह होगा?"</li>
+                        <li><strong>फिर पूछो:</strong> "क्या यह code सही है?" (updated code दिखाओ)</li>
+                        <li><strong>Testing के लिए:</strong> "मैं इसे कैसे test करूँ?"</li>
+                        <li><strong>Edge cases के लिए:</strong> "क्या null/empty/error cases handle हो रहे हैं?"</li>
+                    </ol>
+                </div>
+
+                <h3>Code Review का Complete Template</h3>
+
+                <div class="alert alert-success">
+                    <strong>यह Exact Message भेजो AI को:</strong>
+                </div>
+
+                <div class="code-block"><span class="string">"I want a professional code review of my React Native component.
+
+REFERENCE GUIDE:
+[paste this entire HTML document content here]
+
+MY CURRENT CODE:
+```
+[your complete component code]
+```
+
+PLEASE REVIEW FOR:
+
+1. SAFETY GUARDS:
+   - Null/undefined checks
+   - Error handling
+   - Memory leaks
+   - Component cleanup
+
+2. API INTEGRATION:
+   - Timeout handling
+   - Response validation
+   - Error types
+   - Retry logic
+
+3. UI/UX:
+   - Loading states
+   - Error fallbacks
+   - Validation feedback
+   - Button states
+
+4. ES6 PATTERNS:
+   - Default values (using ??)
+   - Destructuring
+   - Safe operators
+
+5. CODE QUALITY:
+   - Readability
+   - Reusability
+   - Best practices
+
+FOR EACH ISSUE, PLEASE:
+- Explain what's wrong
+- Show the correct way with code
+- Explain WHY it matters
+- Show implementation steps"</span>
+                </div>
+
+                <h3>क्या करना है AI के Response के बाद?</h3>
+
+                <div class="checklist">
+                    <li><strong>Read Carefully:</strong> सब issues समझ लो</li>
+                    <li><strong>Ask for Examples:</strong> Code examples माँगो</li>
+                    <li><strong>Clarify Doubts:</strong> गलत लगे तो दोबारा पूछो</li>
+                    <li><strong>Implement One by One:</strong> एक-एक fix करो</li>
+                    <li><strong>Show Updated Code:</strong> हर fix के बाद code दिखाओ</li>
+                    <li><strong>Verify:</strong> "क्या यह सही है?" confirm करो</li>
+                    <li><strong>Final Check:</strong> सब fixes के बाद full review करवाओ</li>
+                </div>
+            </section>
+
+            <!-- SECTION: AI PROMPTS -->
+            <section id="prompts" class="section">
+                <h2><span class="emoji">💬</span>Ready-to-Use AI Prompts</h2>
+
+                <h3>PROMPT 1: Code Review</h3>
+                <div class="code-block"><span class="string">"Review my React Native code using this professional guide:
+[paste entire HTML document]
+
+My code:
+```
+[paste your code]
+```
+
+Tell me:
+1. Safety guards present/missing
+2. Error handling coverage
+3. UI state management
+4. Validation implementation
+5. How to improve (with code)
+6. Implementation steps"</span>
+                </div>
+                <button class="btn copy-btn" onclick="copyToClipboard(this.parentElement.querySelector('.code-block').innerText)">Copy</button>
+
+                <h3>PROMPT 2: Fix Specific Issue</h3>
+                <div class="code-block"><span class="string">"I have this form but it crashes when data is null.
+
+Code:
+```
+const User = () => {
+  const [user, setUser] = useState(null);
+  return <Text>{user.name}</Text>; // Crashes!
+};
+```
+
+Using this guide [paste guide], tell me:
+1. Why does it crash?
+2. How to fix it?
+3. Show the corrected code
+4. Explain the fix"</span>
+                </div>
+                <button class="btn copy-btn" onclick="copyToClipboard(this.parentElement.querySelector('.code-block').innerText)">Copy</button>
+
+                <h3>PROMPT 3: Implement Feature</h3>
+                <div class="code-block"><span class="string">"I need to add proper error handling to my login form.
+
+Current code:
+```
+const login = async () => {
+  const res = await fetch('/api/login');
+  const data = res.json();
+  setUser(data);
+};
+```
+
+Using this guide [paste guide], show me:
+1. Add timeout handling
+2. Add error states
+3. Add retry logic
+4. Add fallback UI
+5. Complete working code"</span>
+                </div>
+                <button class="btn copy-btn" onclick="copyToClipboard(this.parentElement.querySelector('.code-block').innerText)">Copy</button>
+
+                <h3>PROMPT 4: Complete Form Implementation</h3>
+                <div class="code-block"><span class="string">"Create a production-ready signup form using this guide:
+[paste entire guide]
+
+Requirements:
+- Email & password validation (real-time)
+- Visual feedback (colors, icons, messages)
+- 4 button states (idle, disabled, loading, success)
+- Loading skeleton
+- Error fallback UI
+- Success toast
+- Complete safety guards
+- All error types handled
+
+Show full working code with explanations."</span>
+                </div>
+                <button class="btn copy-btn" onclick="copyToClipboard(this.parentElement.querySelector('.code-block').innerText)">Copy</button>
+
+                <h3>PROMPT 5: Explain Concept</h3>
+                <div class="code-block"><span class="string">"I don't understand nullish coalescing in this context.
+
+Using this guide [paste guide]:
+- Explain ?? vs ||
+- When to use each
+- Show 5 real examples
+- Explain why it matters
+- Common mistakes"</span>
+                </div>
+                <button class="btn copy-btn" onclick="copyToClipboard(this.parentElement.querySelector('.code-block').innerText)">Copy</button>
+            </section>
+
+            <!-- SECTION: CHECKLISTS -->
+            <section id="checklist" class="section">
+                <h2><span class="emoji">📝</span>Before Deployment Checklist</h2>
+
+                <h3>🗂️ State Management Checklist</h3>
+                <ul class="checklist">
+                    <li>Local UI state (form, toggle) → useState use ho raha hai</li>
+                    <li>Global state (auth, theme) → Context API hai</li>
+                    <li>AuthContext mein user, token, login(), logout() hain</li>
+                    <li>Custom hook (useAuth) se context access ho raha hai</li>
+                    <li>Alag-alag concerns ke liye alag Context hain (UserContext, ThemeContext)</li>
+                    <li>Complex multi-component state ke liye Zustand consider kiya hai</li>
+                </ul>
+
+                <h3>🔐 Auth Flow Checklist</h3>
+                <ul class="checklist">
+                    <li>App open pe token check hota hai (checkAuth)</li>
+                    <li>Token valid → AppNavigator, invalid → AuthNavigator</li>
+                    <li>Splash screen tab tak dikhti hai jab tak isReady false hai</li>
+                    <li>Login response mein token + user.id validate hote hain</li>
+                    <li>Token SecureStore mein save hota hai (AsyncStorage nahi)</li>
+                    <li>Logout mein SecureStore clear + Context reset + Cart clear sab hota hai</li>
+                    <li>Protected routes conditional navigator se handle hain (manual redirect nahi)</li>
+                    <li>Server logout call fire-and-forget hai (UI block nahi hoti)</li>
+                </ul>
+
+                <h3>💾 Storage Checklist</h3>
+                <ul class="checklist">
+                    <li>Tokens → SecureStore (expo-secure-store)</li>
+                    <li>Preferences → AsyncStorage</li>
+                    <li>Storage keys ek constants file mein centralized hain</li>
+                    <li>TokenStorage service hai (save/get/delete/clearAll)</li>
+                    <li>AppStorage service hai (saveObject/getObject/getFlag)</li>
+                    <li>Sab storage calls try-catch mein hain</li>
+                    <li>JSON.parse try-catch mein hai (corrupt data crash nahi karegi)</li>
+                    <li>Cache objects mein cachedAt timestamp hai</li>
+                </ul>
+
+                <h3>📶 Offline Checklist</h3>
+                <ul class="checklist">
+                    <li>@react-native-community/netinfo install hai</li>
+                    <li>useNetworkStatus hook bana hai</li>
+                    <li>Global OfflineBanner App.js mein root pe add hai</li>
+                    <li>API call se pehle NetInfo.fetch() check hai</li>
+                    <li>OFFLINE error type switch case mein alag handle hai</li>
+                    <li>Critical screens offline mein cached data dikhate hain</li>
+                    <li>Cache stale indicator hai</li>
+                </ul>
+
+                <h3>📡 HTTP Status Code Checklist</h3>
+                <ul class="checklist">
+                    <li>handleHttpError() function बना है — हर status code alag handle होता है</li>
+                    <li>401 → AsyncStorage clear + Login screen redirect</li>
+                    <li>403 → "Access Denied" UI दिखाता है</li>
+                    <li>404 → "Not Found" empty state दिखाता है</li>
+                    <li>422 → Form field errors map होते हैं</li>
+                    <li>429 → Retry-After header read होता है</li>
+                    <li>500/503 → Retry button के साथ server error UI</li>
+                    <li>Token refresh pattern है (401 → refresh → retry)</li>
+                    <li>Error body safely parse होती है (try-catch में)</li>
+                </ul>
+
+                <h3>🔁 Retry & Race Condition Checklist</h3>
+                <ul class="checklist">
+                    <li>fetchWithRetry() में exponential backoff है</li>
+                    <li>Retry सिर्फ 5xx errors पर होती है, 4xx पर नहीं</li>
+                    <li>AbortError पर retry नहीं होती</li>
+                    <li>429 पर Retry-After header से wait होता है</li>
+                    <li>Race condition: requestId या AbortController से latest request track होती है</li>
+                    <li>Search inputs में debounce (500ms) है</li>
+                    <li>Component unmount पर pending request cancel होती है</li>
+                    <li>Retry UI दिखाता है (attempt X/Y...)</li>
+                </ul>
+
+                <h3>🖥️ Server Errors & Shape Validation Checklist</h3>
+                <ul class="checklist">
+                    <li>parseServerErrors() सभी error formats handle करता है</li>
+                    <li>Field-level errors form inputs के नीचे दिखते हैं</li>
+                    <li>User type करे तो field का server error clear होता है</li>
+                    <li>General error (_general) के लिए banner है</li>
+                    <li>validateResponseShape() critical APIs पर call होता है</li>
+                    <li>Nested field paths validate होते हैं (user.id, payment.status)</li>
+                    <li>Shape validation normalize करने से पहले होती है</li>
+                </ul>
+
+                <h3>🔄 Error Normalization Checklist</h3>
+                <ul class="checklist">
+                    <li>API response normalizeApiResponse() से pass किया गया</li>
+                    <li>String fields normalizeString() से validate हैं</li>
+                    <li>Number fields normalizeNumber() से validate हैं (string "123" handle)</li>
+                    <li>Boolean fields normalizeBoolean() से validate हैं ("true"/"false" handle)</li>
+                    <li>Array fields normalizeArray() से validate हैं</li>
+                    <li>Date fields normalizeDate() से validate हैं</li>
+                    <li>Nested objects के लिए nested normalizers हैं</li>
+                    <li>Field name variations handle हैं (userId vs user_id vs id)</li>
+                    <li>State update में null/undefined safe merge है</li>
+                    <li>UI render में safeText() / safePrice() helpers use हैं</li>
+                </ul>
+
+                <h3>💥 UI Crash Protection Checklist</h3>
+                <ul class="checklist">
+                    <li>ErrorBoundary component बना है और critical screens wrap हैं</li>
+                    <li>Optional chaining (?.) सभी prop access पर है</li>
+                    <li>.map() से पहले Array.isArray() check है</li>
+                    <li>&lt;Text&gt; में सिर्फ String/Number render हो रहे हैं</li>
+                    <li>Boolean/Object/Date को string में convert किया है</li>
+                    <li>FlatList में data prop हमेशा array है (null नहीं)</li>
+                    <li>FlatList keyExtractor हमेशा String return करता है</li>
+                    <li>Navigation.navigate() से पहले params validate हैं</li>
+                    <li>Route params को optional chaining से read किया है</li>
+                    <li>useRef.current को ?. से access किया है</li>
+                    <li>Async setState में isMounted flag है</li>
+                    <li>useEffect cleanup में controller.abort() है</li>
+                </ul>
+
+                <h3>🛡️ Safety Checklist</h3>
+                <ul class="checklist">
+                    <li>All optional fields use ?? (not ||)</li>
+                    <li>All object access uses ?. (optional chaining)</li>
+                    <li>Array operations check Array.isArray()</li>
+                    <li>Null/undefined handled separately</li>
+                    <li>No deep nesting without validation</li>
+                    <li>All API calls have try-catch</li>
+                    <li>Timeout set on all requests (10s)</li>
+                    <li>Response.ok checked</li>
+                    <li>Response data validated</li>
+                    <li>Component cleanup in useEffect</li>
+                </ul>
+
+                <h3>🎨 UI/UX Checklist</h3>
+                <ul class="checklist">
+                    <li>Loading state shows skeleton/spinner</li>
+                    <li>Error state shows fallback UI</li>
+                    <li>Empty state shows appropriate UI</li>
+                    <li>Success state shows feedback</li>
+                    <li>Button disabled when form invalid</li>
+                    <li>Button shows spinner while submitting</li>
+                    <li>Button disabled after success (briefly)</li>
+                    <li>Input has validation feedback (colors)</li>
+                    <li>Error messages specific and actionable</li>
+                    <li>Success messages shown</li>
+                </ul>
+
+                <h3>✅ Validation Checklist</h3>
+                <ul class="checklist">
+                    <li>Input validation before API call</li>
+                    <li>Real-time validation on keystroke</li>
+                    <li>Validation error shown immediately</li>
+                    <li>Success checkmark shown</li>
+                    <li>Form submit only when all valid</li>
+                    <li>Validation errors cleared after success</li>
+                    <li>Type validation for all fields</li>
+                    <li>Trim strings before validation</li>
+                    <li>Edge cases handled (empty, null)</li>
+                </ul>
+
+                <h3>🔒 API Integration Checklist</h3>
+                <ul class="checklist">
+                    <li>AbortController implemented</li>
+                    <li>Timeout set (10-15 seconds)</li>
+                    <li>Request cancelled on unmount</li>
+                    <li>Status code checking (response.ok)</li>
+                    <li>JSON parse in try-catch</li>
+                    <li>Response structure validated</li>
+                    <li>Critical fields checked</li>
+                    <li>Timeout errors handled separately</li>
+                    <li>Network errors handled separately</li>
+                    <li>Parse errors handled separately</li>
+                    <li>User-friendly error messages</li>
+                </ul>
+
+                <h3>📱 Mobile-Specific Checklist</h3>
+                <ul class="checklist">
+                    <li>Keyboard handling (dismiss on submit)</li>
+                    <li>Safe area considered</li>
+                    <li>Touch feedback (activeOpacity)</li>
+                    <li>Loading indicator visible</li>
+                    <li>Text size accessible (min 16px)</li>
+                    <li>Colors contrast sufficient</li>
+                    <li>RTL support considered</li>
+                    <li>Dark mode support added</li>
+                </ul>
+
+                <h3>🚀 Code Quality Checklist</h3>
+                <ul class="checklist">
+                    <li>No console.errors left</li>
+                    <li>No console.logs in production</li>
+                    <li>No magic strings/numbers</li>
+                    <li>Functions properly named</li>
+                    <li>Comments for complex logic</li>
+                    <li>Reusable logic extracted</li>
+                    <li>No code duplication</li>
+                    <li>Proper error boundaries</li>
+                    <li>Performance optimized</li>
+                    <li>Memory leaks checked</li>
+                </ul>
+
+                <h3>✨ Final Sign-Off Checklist</h3>
+                <ul class="checklist">
+                    <li>Code reviewed by team lead</li>
+                    <li>All edge cases tested</li>
+                    <li>Null/empty/error cases tested</li>
+                    <li>Timeout tested (disconnect internet)</li>
+                    <li>Component unmount cleanup tested</li>
+                    <li>Double-submit prevented</li>
+                    <li>Loading UI looks good</li>
+                    <li>Error UI looks good</li>
+                    <li>Success feedback clear</li>
+                    <li>Ready for production ✅</li>
+                </ul>
+            </section>
+
+        </div>
+
+        <footer>
+            <p><strong>📚 React Native API Integration - Team Lead Guide</strong></p>
+            <p>Complete reference for production-grade code with safety guards, validation, and proper state management.</p>
+            <p>Use with AI for code review → Get suggestions → Implement → Re-review until perfect ✨</p>
+            <p style="margin-top: 20px; color: #999; font-size: 0.9em;">Last Updated: 2025 | For React Native Development Teams</p>
+        </footer>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✓ Copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add click listeners to nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                   
