@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "621905121057",
+    "project_id": "retailer-app-krishigyanai",
+    "storage_bucket": "retailer-app-krishigyanai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621905121057:android:b36ab7e7249729e9147860",
+        "android_client_info": {
+          "package_name": "com.retailmanagementshop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr6Hf7P1BDvsJklgZfIVgwWXeGRdVO6SY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

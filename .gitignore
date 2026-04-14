@@ -73,3 +73,13 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Ignore sensitive documentation
+auth.md
+debug.md
+
+# Ignore bulky or environment-specific files
+.bundle/
+.vscode/
+*.log
+package-lock.json
